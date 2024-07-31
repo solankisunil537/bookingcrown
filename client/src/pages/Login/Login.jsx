@@ -1,7 +1,62 @@
 import { Link } from "react-router-dom";
 import Footer from "../../components/Footer";
+import { login } from "../../api/Auth";
+import { useState } from "react";
 
 function Login() {
+    const [loading, setLoading] = useState(false);
+    const [errors, setErrors] = useState({})
+    const [value, setValue] = useState({
+        email: "",
+        password: ""
+    })
+
+    const handleValueChange = (e) => {
+        const { name, value } = e.target
+        setValue(prevState => ({
+            ...prevState,
+            [name]: value
+        }));
+        setErrors({ ...errors, [name]: false })
+    }
+
+    const validateForm = () => {
+        const newErrors = {};
+        const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+
+        if (!value.email.trim()) {
+            newErrors.email = true
+        } else if (!emailRegex.test(value.email)) {
+            newErrors.email = true
+        }
+
+        if (!value.password.trim()) {
+            newErrors.password = true
+        }
+
+        setErrors(newErrors);
+
+        return Object.keys(newErrors).length === 0;
+    };
+
+    const handleSubmitForm = async (e) => {
+        e.preventDefault()
+        if (validateForm()) {
+            setLoading(true);
+            try {
+                const data = await login(value.email, value.password)
+                if (data.success) {
+                    setValue({
+                        email: "",
+                        password: "",
+                    })
+                }
+            } catch (error) {
+            } finally {
+                setLoading(false);
+            }
+        }
+    }
     return (
         <>
             <section className="bg-slate-50 flex items-center justify-center py-12 px-4 min-h-screen">
@@ -24,29 +79,38 @@ function Login() {
                                 </p>
                             </div>
                             <div className="bg-white rounded-md shado p-6">
-                                <form onSubmit={(e) => e.preventDefault()}>
+                                <form onSubmit={(e) => handleSubmitForm(e)}>
                                     <div className="grid lg:grid-cols-12 grid-cols-1 gap-5">
                                         <div className="lg:col-span-12">
                                             <label htmlFor="email" className="font-semibold">
-                                                Your Email:
+                                                Your Email: {errors.email && <span className='text-[red]'>*</span>}
                                             </label>
                                             <input
                                                 name="email"
-                                                id="email"
+                                                value={value.email}
+                                                onChange={handleValueChange}
                                                 type="email"
-                                                className="mt-2 w-full py-2 px-3 h-10 bg-transparent rounded outline-none border border-gray-300 focus:ring-0 focus:border-themeColor"
+                                                className={`mt-2 w-full py-2 px-3 h-10 bg-transparent rounded outline-none border ${errors.email ? 'border-red-500' : 'border-gray-300'} focus:ring-0 focus:border-themeColor`}
                                                 placeholder="Email :"
                                             />
                                         </div>
                                         <div className="lg:col-span-12">
                                             <label htmlFor="email" className="font-semibold">
-                                                Your Password:
+                                                Your Password:  {errors.password && <span className='text-[red]'>*</span>}
                                             </label>
                                             <input
                                                 type="password"
-                                                className="mt-2 w-full py-2 px-3 h-10 bg-transparent rounded outline-none border border-gray-300 focus:ring-0 focus:border-themeColor"
+                                                name="password"
+                                                value={value.password}
+                                                onChange={handleValueChange}
+                                                className={`mt-2 w-full py-2 px-3 h-10 bg-transparent rounded outline-none border ${errors.password ? 'border-red-500' : 'border-gray-300'} focus:ring-0 focus:border-themeColor`}
                                                 placeholder="Password :"
                                             />
+                                        </div>
+                                        <div className="text-right">
+                                            <p className="text-slate-600">
+                                                <Link to="#" className="text-teal-500 hover:text-teal-700 font-semibold">Change Password</Link>
+                                            </p>
                                         </div>
                                     </div>
                                     <button
