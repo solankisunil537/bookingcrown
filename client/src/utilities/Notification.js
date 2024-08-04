@@ -5,7 +5,7 @@ const openNotification = (type, message, description) => {
         message,
         description,
         placement: 'topRight',
-        duration: 3,
+        duration: 5,
     });
 };
 

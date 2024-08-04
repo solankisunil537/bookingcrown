@@ -1,4 +1,3 @@
-// models/Booking.js
 const mongoose = require('mongoose');
 
 const bookingSchema = new mongoose.Schema({
@@ -6,8 +5,10 @@ const bookingSchema = new mongoose.Schema({
     customerName: { type: String, required: true },
     mobilenu: { type: Number, required: true },
     date: { type: Date, required: true },
-    timeFrom: { type: Date },
-    timeTo: { type: Date },
+    time: {
+        start: { type: String },
+        end: { type: String }
+    },
     totalHours: { type: Number },
     turfOrTable: { type: String, required: true },
     amount: { type: Number, required: true },

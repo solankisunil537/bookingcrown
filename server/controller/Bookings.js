@@ -2,21 +2,15 @@ const Bookings = require("../model/Bookings");
 
 exports.createBookings = async (req, res) => {
     try {
-        const { customerName, mobilenu, date, timeFrom, timeTo, turfOrTable, amount, advance, pending, bookingType, session, userId } = req.body;
-
-        let totalHours = 0;
-        if (bookingType === 'Hourly' && timeFrom && timeTo) {
-            const diffMs = new Date(timeTo) - new Date(timeFrom);
-            totalHours = Math.ceil(diffMs / (1000 * 60 * 60));
-        }
+        const userId = req.user.id
+        const { customerName, mobilenu, date, time, turfOrTable, totalHours, amount, advance, pending, bookingType, session } = req.body;
 
         const booking = new Bookings({
             userId,
             customerName,
             mobilenu,
             date,
-            timeFrom,
-            timeTo,
+            time,
             totalHours,
             turfOrTable,
             amount,
@@ -35,20 +29,13 @@ exports.createBookings = async (req, res) => {
 
 exports.updateBookingDetails = async (req, res) => {
     try {
-        const { name, phone, date, timeFrom, timeTo, turfOrTable, amount, advance, pending, bookingType, session } = req.body;
-
-        let totalHours = 0;
-        if (bookingType === 'Hourly' && timeFrom && timeTo) {
-            const diffMs = new Date(timeTo) - new Date(timeFrom);
-            totalHours = Math.ceil(diffMs / (1000 * 60 * 60));
-        }
+        const { name, phone, date, time, turfOrTable, totalHours, amount, advance, pending, bookingType, session } = req.body;
 
         const booking = await Bookings.findByIdAndUpdate(req.params.id, {
             name,
             phone,
             date,
-            timeFrom,
-            timeTo,
+            time,
             totalHours,
             turfOrTable,
             amount,
@@ -77,25 +64,55 @@ exports.deleteBookings = async (req, res) => {
 
 exports.getAllBookings = async (req, res) => {
     try {
-        const userId = req.params.id;
-        const page = parseInt(req.query.page) || 1;
-        const limit = 10;
-        const skip = (page - 1) * limit;
+        const userId = req.user.id;
 
-        const totalCount = await Bookings.countDocuments({ userId });
-
-        const bookings = await Bookings.find({ userId })
-            .skip(skip)
-            .limit(limit);
+        const bookings = await Bookings.find({ userId: userId })
 
         if (!bookings.length) return res.status(404).json({ error: 'No bookings found' });
 
         res.status(200).json({
             message: 'Booking data retrieved successfully',
             success: true,
-            totalCount,
-            totalPages: Math.ceil(totalCount / limit),
-            currentPage: page,
+            bookings
+        });
+    } catch (error) {
+        res.status(400).json({ error: error.message });
+    }
+}
+
+exports.getSingleBooking = async (req, res) => {
+    try {
+        const id = req.params.id;
+
+        const bookings = await Bookings.findById(id)
+
+        if (!bookings) return res.status(404).json({ error: 'No bookings found' });
+
+        res.status(200).json({
+            message: 'Booking data retrieved successfully',
+            success: true,
+            bookings
+        });
+    } catch (error) {
+        res.status(400).json({ error: error.message });
+    }
+}
+
+exports.cancelBooking = async (req, res) => {
+    try {
+        const id = req.params.id
+        const bookings = await Bookings.findById(id)
+        if (!bookings) return res.status(404).json({ message: "Booking data not found !" })
+
+        if (!bookings.isCanceled) {
+            bookings.isCanceled = true
+        } else {
+            return res.status(200).json({ success: true, message: "Booking is already cancelled !" })
+        }
+        await bookings.save()
+        res.status(200).json({
+            message: 'Booking cancelled successfully',
+            success: true,
             bookings
         });
     } catch (error) {

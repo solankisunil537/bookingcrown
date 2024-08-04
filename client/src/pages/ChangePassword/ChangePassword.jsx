@@ -1,40 +1,23 @@
-import { Link, useNavigate } from "react-router-dom";
-import { login } from "../../api/Auth";
-import { useState } from "react";
-import Footer from "../../common/Footer";
-import { Form, Input, Button, Typography, Spin } from 'antd';
+import React, { useState } from 'react'
+import Footer from '../../common/Footer'
+import { Form, Input, Button, Spin } from 'antd';
+import { changePassword } from '../../api/Auth';
+import { useNavigate } from 'react-router-dom'
 
-const { Text } = Typography;
-
-function Login() {
-    const [form] = Form.useForm();
+function ChangePassword() {
     const [loading, setLoading] = useState(false);
     const navigate = useNavigate()
 
     const onFinish = async (values) => {
         setLoading(true)
-        try {
-            const data = await login(values.email, values.password)
-            if (data.success) {
-                localStorage.setItem("token", data.token)
-                localStorage.setItem("role", data.role)
-                form.resetFields()
-                if (data.role === "user") {
-                    navigate("/user/dashboard")
-                } else if (data.role === "admin") {
-                    navigate("/admin/dashbaord")
-                }
-            }
-        } catch (error) {
-            console.log(error);
-
-        } finally {
-            setLoading(false)
+        const data = await changePassword(values)
+        if (data.success) {
+            navigate("/login")
         }
+        setLoading(false)
     };
-
     return (
-        <>
+        <div>
             <section className="flex items-center justify-center py-12 px-4 min-h-screen">
                 <div className="grid md:grid-cols-12 grid-cols-1 gap-8 items-center">
                     <div className="lg:col-span-6 md:col-span-6 hidden lg:flex justify-center">
@@ -48,7 +31,7 @@ function Login() {
                         <div className="max-w-[700px] w-full bg-white rounded-md shadow p-6">
                             <div className="pb-6 text-center">
                                 <h3 className="font-semibold text-2xl leading-normal mb-4">
-                                    Sign In To Your Account
+                                    Change Password
                                 </h3>
                                 <p className="text-slate-400 max-w-xl mx-auto">
                                     Welcome back! Please sign in to access your account.
@@ -63,21 +46,7 @@ function Login() {
                                 >
                                     <Form.Item
                                         label="Current Password"
-                                        name="email"
-                                        rules={[
-                                            { required: true, message: 'Please input your email!' },
-                                            { type: 'email', message: 'The input is not valid E-mail!' }
-                                        ]}
-                                    >
-                                        <Input
-                                            placeholder="Email"
-                                            className="h-10 bg-transparent rounded border-gray-300 focus:border-themeColor"
-                                        />
-                                    </Form.Item>
-
-                                    <Form.Item
-                                        label="Your Password"
-                                        name="password"
+                                        name="currentPassword"
                                         rules={[{ required: true, message: 'Please input your password!' }]}
                                     >
                                         <Input.Password
@@ -86,13 +55,27 @@ function Login() {
                                         />
                                     </Form.Item>
 
-                                    <div className="mb-4">
-                                        <Text className="text-slate-600">
-                                            <Link to="/change-password" className="!text-teal-500 hover:text-teal-700 font-semibold">
-                                                Change Password
-                                            </Link>
-                                        </Text>
-                                    </div>
+                                    <Form.Item
+                                        label="New Password"
+                                        name="newPassword"
+                                        rules={[{ required: true, message: 'Please input your password!' }]}
+                                    >
+                                        <Input.Password
+                                            placeholder="Password"
+                                            className="h-10 bg-transparent rounded border-gray-300 focus:border-themeColor"
+                                        />
+                                    </Form.Item>
+
+                                    <Form.Item
+                                        label="Confirm Password"
+                                        name="confirmPassword"
+                                        rules={[{ required: true, message: 'Please input your password!' }]}
+                                    >
+                                        <Input.Password
+                                            placeholder="Password"
+                                            className="h-10 bg-transparent rounded border-gray-300 focus:border-themeColor"
+                                        />
+                                    </Form.Item>
 
                                     <Form.Item>
                                         <Button
@@ -102,24 +85,20 @@ function Login() {
                                             disabled={loading}
                                         >
                                             {loading && <Spin size="small" className="mr-2" />}
-                                            {loading ? 'Signing in...' : 'SignIn'}
+                                            {loading ? 'Changing Password...' : 'Change Password'}
                                         </Button>
                                     </Form.Item>
                                 </Form>
                             </div>
-                            <div className="mt-6 text-center">
-                                <p className="text-slate-600">
-                                    Don't have an account? <Link to="/signup" className="text-teal-500 hover:text-teal-700 font-semibold">Register</Link>
-                                </p>
-                            </div>
+
                         </div>
                     </div>
                 </div>
             </section>
 
             <Footer />
-        </>
-    );
+        </div>
+    )
 }
 
-export default Login;
+export default ChangePassword

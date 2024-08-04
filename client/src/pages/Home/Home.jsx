@@ -1,5 +1,4 @@
 import React from 'react'
-import Header from '../../components/Header'
 import AboutUs from '../../assets/asset_9.webp'
 import boxCricket from "../../assets/asset_4.jpg"
 import rastuarant from "../../assets/asset_5.webp"
@@ -10,7 +9,8 @@ import { MdDashboard, MdEmail, MdOutlineEventAvailable, MdSpeakerNotes } from 'r
 import { IoCall, IoPeople } from 'react-icons/io5'
 import { FaLock, FaUserCheck } from 'react-icons/fa'
 import { IoMdNotifications, IoMdSettings } from 'react-icons/io'
-import Footer from '../../components/Footer'
+import Header from '../../common/Header'
+import Footer from '../../common/Footer'
 
 const events = [
     {

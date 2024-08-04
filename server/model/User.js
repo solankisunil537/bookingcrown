@@ -37,6 +37,10 @@ const UserSchema = new mongoose.Schema({
         enum: ['user', 'admin'],
         default: 'user',
     },
+    tableList: {
+        type: [Number],
+        default: []
+    },
     userType: {
         type: String,
         enum: ['default', 'premium', 'non-premium'],
@@ -55,9 +59,10 @@ UserSchema.pre('save', async function (next) {
 });
 
 // Compare entered password with hashed password
-UserSchema.methods.matchPassword = function (enteredPassword) {
-    return bcrypt.compare(enteredPassword, this.password);
-};
+// UserSchema.methods.matchPassword = function (enteredPassword) {
+//     return bcrypt.compare(enteredPassword, this.password);
+// };
+
 
 const User = mongoose.model('User', UserSchema);
 
