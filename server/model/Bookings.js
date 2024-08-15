@@ -10,17 +10,11 @@ const bookingSchema = new mongoose.Schema({
         end: { type: String }
     },
     totalHours: { type: Number },
-    turfOrTable: { type: String, required: true },
+    item: { type: String, },
     amount: { type: Number, required: true },
     advance: { type: Number, default: 0 },
     pending: { type: Number, default: function () { return this.amount - (this.advance || 0); } },
     payment: { type: String, required: true, default: "pending", enum: ["paid", "partial", "pending"] },
-    isCanceled: { type: Boolean, default: false },
-    bookingType: {
-        type: String,
-        enum: ['Full Day', 'Half Day', 'Hourly'],
-        required: true
-    },
     session: {
         type: String,
         enum: ['Morning Session', 'Afternoon Session', 'Evening Session'],

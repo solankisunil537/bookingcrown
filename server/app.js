@@ -1,16 +1,29 @@
 const express = require('express');
 const db = require('./utils/db');
+const http = require('http');
+// const socketIo = require('socket.io');
 const UserRouter = require('./routes/UserRouter');
 const BookingRouter = require('./routes/BookingRouter');
 const TableRouter = require('./routes/TableRouter');
+const PlanRouter = require('./routes/PlanRouter');
 const app = express();
 const PORT = process.env.PORT || 4000;
-const cors = require("cors")
+const cors = require("cors");
 db()
+
+const server = http.createServer(app);
+const { Server } = require("socket.io");
 
 app.use(express.json())
 app.use(express.urlencoded({ extended: false }));
 app.use(cors())
+
+const io = new Server(server, {
+    cors: {
+        origin: 'http://localhost:3000',
+        methods: ['GET', 'POST']
+    }
+})
 
 app.get('/', (req, res) => {
     res.send('Hello, World!');
@@ -19,7 +32,25 @@ app.get('/', (req, res) => {
 app.use('/api', UserRouter);
 app.use('/api', BookingRouter);
 app.use('/api', TableRouter);
+app.use('/api', PlanRouter);
 
-app.listen(PORT, () => {
+io.on('connection', (socket) => {
+    console.log('A user connected');
+
+    socket.on('joinRoom', (room) => {
+        socket.join(room);
+        console.log(`User joined room: ${room}`);
+    });
+
+    socket.on('userSignedUp', () => {
+        io.to('adminRoom').emit('newUser');
+    });
+
+    socket.on('disconnect', () => {
+        console.log('User disconnected');
+    });
+});
+
+server.listen(PORT, () => {
     console.log(`Server is running on http://localhost:${PORT}`);
 });

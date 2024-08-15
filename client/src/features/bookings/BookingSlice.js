@@ -16,7 +16,13 @@ const BookingsSlice = createSlice({
         status: 'idle',
         error: null,
     },
-    reducers: {},
+    reducers: {
+        reset: (state) => {
+            state.bookings = [];
+            state.status = 'idle';
+            state.error = null;
+        }
+    },
     extraReducers: (builder) => {
         builder
             .addCase(fetchAllBookings.pending, (state) => {
@@ -33,4 +39,5 @@ const BookingsSlice = createSlice({
     },
 });
 
+export const { reset } = BookingsSlice.actions;
 export default BookingsSlice.reducer;

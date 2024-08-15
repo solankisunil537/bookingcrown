@@ -12,12 +12,10 @@ export const signup = async (name, mobilenu, email, businessType, businessName, 
             businessName: businessName,
             address: address
         })
-        if (response.data) {
-            Notification.success(response.data.message)
-        }
         return response.data
     } catch (error) {
-        Notification.error(error.response.data.message)
+        console.log(error)
+        // Notification.error(error.response.data.message)
         return error
     }
 }
@@ -27,7 +25,7 @@ export const login = async (email, password) => {
         const response = await axios.post(baseUrl + "/login", {
             email: email, password: password
         })
-        if (response.data) {
+        if (response.data.success) {
             Notification.success(response.data.message)
         }
         return response.data

@@ -11,6 +11,7 @@ import { FaLock, FaUserCheck } from 'react-icons/fa'
 import { IoMdNotifications, IoMdSettings } from 'react-icons/io'
 import Header from '../../common/Header'
 import Footer from '../../common/Footer'
+import Contact from '../../common/Contact'
 
 const events = [
     {
@@ -66,7 +67,7 @@ const users = [
     },
     {
         id: 4,
-        title: "Hotel Booking Managers",
+        title: "Hotel Managers",
         image: hotel,
         description: "Handle room reservations and customer details with our comprehensive booking system, ensuring a seamless stay for your guests."
     },
@@ -131,15 +132,15 @@ function Home() {
                     <div>
                         <img src={AboutUs} alt="AboutUs" className='w-[90%] mx-auto h-full object-cover rounded-2xl' />
                     </div>
-                    <div className='flex flex-wrap justify-between'>
+                    <div className='flex flex-wrap justify-between stepper-main'>
                         {about.map((item, i) => {
                             return (
-                                <div key={i} className="flex items-start space-x-4 pb-6">
-                                    <div className="relative">
-                                        <div className="bg-themeColor text-white p-4 rounded-full border-4 border-[#96e3da] text-[18px]">
+                                <div key={i} className="flex items-start space-x-4 pb-6 relative">
+                                    <div>
+                                        <div className="bg-themeColor text-white p-4 rounded-full border-4 border-[#96e3da] text-[18px] relative z-[1]">
                                             <i>{item.icon}</i>
                                         </div>
-                                        <div className="absolute left-1/2 transform -translate-x-1/2 top-full w-px bg-themeColor" style={{ height: '150%' }}></div>
+                                        <div className="absolute left-[30px] h-full transform -translate-x-1/2 top-0 w-px bg-themeColor after-step"></div>
                                     </div>
                                     <div>
                                         <h4 className="text-lg font-semibold my-2">{item.title}</h4>
@@ -152,7 +153,6 @@ function Home() {
                         })}
                     </div>
                 </div>
-
             </section>
             {/* About section */}
 
@@ -240,26 +240,7 @@ function Home() {
                         We'd love to hear from you! If you have any questions, feedback, or need support, please don't hesitate to reach out to us. Our team is here to assist you and ensure that your experience with BookingCrown is nothing short of excellent.
                     </p>
                 </div>
-                <div className="flex flex-wrap justify-center gap-6 mt-6">
-                    <div className="rounded-md shadow bg-white max-w-max">
-                        <div className="p-6 text-center">
-                            <i className=' text-themeColor'><MdEmail className='mb-2 text-[30px] mx-auto text-center' /></i>
-                            <h4 className='font-semibold text-themeColor'>Email</h4>
-                            <p className="mt-3 text-[15px] text-slate-400">
-                                <a href="mailto:bookingcrown@gmail.com" target='_blank'>bookingcrown@gmail.com</a>
-                            </p>
-                        </div>
-                    </div>
-                    <div className="rounded-md shadow bg-white max-w-max px-5">
-                        <div className="p-6 text-center">
-                            <i className=' text-themeColor'><IoCall className='mb-2 text-[30px] mx-auto text-center' /></i>
-                            <h4 className='font-semibold text-themeColor'>Phone</h4>
-                            <p className="mt-3 text-[15px] text-slate-400">
-                                <a href="#" target='_blank'>+91 99988 83603</a>
-                            </p>
-                        </div>
-                    </div>
-                </div>
+                <Contact />
                 <div className='text-center mt-6 text-slate-400'>
                     <p>Feel free to contact us anytime, and we'll get back to you as soon as possible.</p>
                 </div>

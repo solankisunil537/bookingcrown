@@ -1,17 +1,8 @@
 const User = require("../model/User");
 const jwt = require('jsonwebtoken');
-const nodemailer = require('nodemailer');
-const { generateStrongPassword } = require("../utils/helper");
-const bcrypt = require("bcryptjs")
+const bcrypt = require("bcryptjs");
+const Plan = require("../model/Plan");
 const JWT_SECRET = process.env.JWT_SECRET
-
-const transporter = nodemailer.createTransport({
-    service: 'gmail',
-    auth: {
-        user: process.env.SMTP_USER,
-        pass: process.env.SMTP_PASSWORD
-    }
-});
 
 exports.createUser = async (req, res) => {
     const { name, email, mobilenu, businessType, businessName, address } = req.body;
@@ -31,12 +22,9 @@ exports.createUser = async (req, res) => {
             return res.status(400).json({ message: `User with the email ${email} already exists. Please provide another email` });
         }
 
-        // generated strong password of 8 digit
-        const password = generateStrongPassword();
         user = new User({
             name,
             email,
-            password,
             mobilenu,
             businessType,
             businessName,
@@ -44,28 +32,49 @@ exports.createUser = async (req, res) => {
         });
 
         await user.save()
-
-        // send generated password to the user's email
-        const mailOptions = {
-            from: process.env.USER_EMAIL,
-            to: email,
-            subject: 'Welcome to BookingCrown!',
-            text: `Dear ${name},
-            \n\nWe are delighted to welcome you to BookingCrown, where managing your bookings and customers has never been easier. Your registration has been completed successfully, and you can now access all the features our platform offers to streamline your business operations.
-            \n\nYour account has been created with the following password: ${password}
-            \n\nPlease keep this information secure and use it to log in to your account and You can login with your email and password..
-            \n\nIf you have any questions or need assistance, feel free to contact our support team at +91 99988 83603. We are here to help!
-            \n\nBest regards,
-            \nThe BookingCrown Team`
-        };
-
-        await transporter.sendMail(mailOptions);
-        res.status(200).json({ success: true, message: 'Your account has been successfully created. A password has been sent to your email address.' });
+        res.status(200).json({ success: true, message: 'Your account has been successfully created.' });
     } catch (err) {
         console.error(err.message);
         res.status(500).send(err);
     }
 }
+
+exports.updateUser = async (req, res) => {
+    const userId = req.user.id;
+    const { name, email, mobilenu, businessType, businessName, address, itemList } = req.body;
+
+    try {
+        if (!name || !email || !mobilenu || !businessType || !businessName || !address || !itemList) {
+            return res.status(400).json({ message: 'All fields are required' });
+        }
+
+        const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+        if (!emailRegex.test(email)) {
+            return res.status(400).json({ message: 'Invalid email format' });
+        }
+
+        let user = await User.findById(userId);
+        if (!user) {
+            return res.status(404).json({ message: 'User not found' });
+        }
+
+        user.name = name;
+        user.email = email;
+        user.mobilenu = mobilenu;
+        user.businessType = businessType;
+        user.businessName = businessName;
+        user.address = address;
+        user.itemList = itemList;
+
+        await user.save();
+
+        res.status(200).json({ success: true, message: 'Your details updated successfully!' });
+    } catch (err) {
+        console.error(err.message);
+        res.status(500).send('Server error');
+    }
+};
+
 
 exports.loginUser = async (req, res) => {
     const { email, password } = req.body;
@@ -78,7 +87,14 @@ exports.loginUser = async (req, res) => {
 
         const isMatch = await bcrypt.compare(password, user.password);
         if (!isMatch) {
-            return res.status(400).json({ message: 'Invalid email or password. Please try again later' });
+            return res.status(400).json({ message: 'Invalid email or password. Please try again later', success: false });
+        }
+
+        if (user.role === "user") {
+            const plan = await Plan.findOne({ userId: user._id });
+            if (!plan || plan.endDate < new Date()) {
+                return res.status(403).json({ message: 'Access Denied.', success: false });
+            }
         }
 
         const payload = {
@@ -201,15 +217,43 @@ exports.getUserData = async (req, res) => {
     try {
         const userId = req.user.id
         const data = await User.findById(userId)
-
-        if (!data) return res.status(404).json({ error: 'No User found' });
+        if (!data) return res.status(304).json({ message: 'No User found' });
+        const userPlan = await Plan.findOne({ userId: userId });
+        // if (!userPlan) return res.status(304).json({ message: 'No Plan found' });
 
         res.status(200).json({
-            message: 'USer data retrieved successfully',
+            message: 'User data retrieved successfully',
             success: true,
-            data
+            data: data,
+            plan: userPlan || {}
         });
     } catch (error) {
         res.status(400).json({ error: error.message });
     }
 }
+
+exports.getAllUsers = async (req, res) => {
+    try {
+        const Users = await User.find({ role: "user" });
+
+        if (!Users || Users.length === 0) {
+            return res.status(400).json({ message: "No user data found" });
+        }
+
+        const allUsers = await Promise.all(Users.map(async (user) => {
+            const plan = await Plan.findOne({ userId: user._id }).sort({ createdAt: -1 }).limit(1);
+            return {
+                ...user._doc,
+                planData: plan || null
+            };
+        }));
+
+        res.status(200).json({
+            message: 'User data retrieved successfully',
+            success: true,
+            allUsers
+        });
+    } catch (error) {
+        res.status(400).json({ error: error.message });
+    }
+};

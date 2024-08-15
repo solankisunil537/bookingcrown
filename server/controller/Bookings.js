@@ -3,7 +3,7 @@ const Bookings = require("../model/Bookings");
 exports.createBookings = async (req, res) => {
     try {
         const userId = req.user.id
-        const { customerName, mobilenu, date, time, turfOrTable, totalHours, amount, advance, pending, bookingType, session } = req.body;
+        const { customerName, mobilenu, date, time, turfOrTable, totalHours, amount, advance, pending, bookingType, session, item } = req.body;
 
         const booking = new Bookings({
             userId,
@@ -17,7 +17,8 @@ exports.createBookings = async (req, res) => {
             advance,
             pending,
             bookingType,
-            session
+            session,
+            item
         });
 
         await booking.save();
@@ -68,7 +69,7 @@ exports.getAllBookings = async (req, res) => {
 
         const bookings = await Bookings.find({ userId: userId })
 
-        if (!bookings.length) return res.status(404).json({ error: 'No bookings found' });
+        if (!bookings.length) return res.status(400).json({ message: 'No bookings found' });
 
         res.status(200).json({
             message: 'Booking data retrieved successfully',

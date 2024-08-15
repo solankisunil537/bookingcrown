@@ -18,15 +18,18 @@ const UserSchema = new mongoose.Schema({
     },
     password: {
         type: String,
-        required: true,
     },
     businessType: {
         type: String,
         required: true,
+        enum: ["Box Cricket", "Cafe/Restuarant", "Hotel management", "Farm"]
     },
     businessName: {
         type: String,
         require: true
+    },
+    bookingType: {
+        type: String,
     },
     address: {
         type: String,
@@ -37,14 +40,8 @@ const UserSchema = new mongoose.Schema({
         enum: ['user', 'admin'],
         default: 'user',
     },
-    tableList: {
-        type: [Number],
-        default: []
-    },
-    userType: {
-        type: String,
-        enum: ['default', 'premium', 'non-premium'],
-        default: 'default',
+    itemList: {
+        type: [String]
     }
 }, { timestamps: true });
 
@@ -58,11 +55,21 @@ UserSchema.pre('save', async function (next) {
     next();
 });
 
+UserSchema.pre('save', function (next) {
+    if (this.isNew) {
+        if (["Box Cricket", "Cafe/Restuarant"].includes(this.businessType)) {
+            this.bookingType = 'hourly';
+        } else {
+            this.bookingType = 'daily';
+        }
+    }
+    next();
+});
+
 // Compare entered password with hashed password
 // UserSchema.methods.matchPassword = function (enteredPassword) {
 //     return bcrypt.compare(enteredPassword, this.password);
 // };
-
 
 const User = mongoose.model('User', UserSchema);
 

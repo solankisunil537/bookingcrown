@@ -1,17 +1,27 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { Tabs } from 'antd';
 import Sidebar from '../../components/Sidebar';
+import { useDispatch, useSelector } from 'react-redux';
+import { fetchUserData } from '../../../features/user/UserSlice';
 import CommonTable from '../../components/CommonTable';
 
 const { TabPane } = Tabs;
 
 function Dashboard() {
     const [activeKey, setActiveKey] = useState('1');
+    const dispatch = useDispatch()
+    const { user, status } = useSelector((state) => state.user);
+
+    useEffect(() => {
+        if (status === "idle") {
+            dispatch(fetchUserData())
+        }
+    }, [dispatch])
 
     return (
         <div>
             <Sidebar />
-            <main className="py-4 w-full lg:w-[calc(100%-15rem)] ms-auto">
+            <main className="py-4 w-full lg:w-[calc(100%-16rem)] ms-auto">
                 <div className="px-4 sm:px-6 lg:px-6">
                     <div className="mb-3 flex flex-wrap">
                         <div className="w-full sm:w-1/2">
@@ -25,10 +35,9 @@ function Dashboard() {
                             onChange={(key) => setActiveKey(key)}
                         >
                             <TabPane tab="Upcoming Bookings" key="1">
-                                <CommonTable filter={"upcoming"} />
-                            </TabPane>
-                            <TabPane tab="Current Month Bookings" key="2">
-                                <CommonTable filter={'currentMonth'} />
+                                <CommonTable filter="upcoming" />
+                                {/* {user.data?.bookingType === "hourly" ? (<HourlyTable filter="upcoming" />) : (<DailyTable filter="upcoming" />)} */}
+
                             </TabPane>
                         </Tabs>
                     </div>

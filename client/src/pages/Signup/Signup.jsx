@@ -1,22 +1,33 @@
-import React, { useState } from 'react'
-import { Link } from 'react-router-dom'
+import React, { useEffect, useState } from 'react'
+import { Link, useNavigate } from 'react-router-dom'
 import { RiExpandUpDownFill } from 'react-icons/ri'
 import { Form, Input, Button, Select, Spin, Col, Row } from 'antd';
 import { signup } from '../../api/Auth'
 import Footer from '../../common/Footer'
+import io from 'socket.io-client';
+
+const socket = io('http://localhost:4000');
 
 const { Option } = Select;
 
 const business = [
     { id: 2, name: 'Box Cricket' },
     { id: 3, name: 'Cafe/Restuarant' },
-    { id: 4, name: 'Hotels' },
+    { id: 4, name: 'Hotel management' },
     { id: 3, name: 'Farm' },
 ]
 
 function Signup() {
     const [form] = Form.useForm();
     const [loading, setLoading] = useState(false);
+    const navigate = useNavigate()
+
+    useEffect(() => {
+        socket.emit('joinRoom', 'signupRoom');
+        return () => {
+            socket.off('joinRoom', 'signupRoom');
+        };
+    }, []);
 
     const onFinish = async (values) => {
         setLoading(true)
@@ -24,6 +35,8 @@ function Signup() {
             const data = await signup(values.name, values.mobilenu, values.email, values.businessType, values.businessName, values.address)
             if (data.success) {
                 form.resetFields()
+                socket.emit('userSignedUp');
+                navigate("/signup-confirmation")
             }
         } catch (error) {
             console.log(error);
@@ -32,7 +45,6 @@ function Signup() {
             setLoading(false)
         }
     };
-
 
     return (
         <>

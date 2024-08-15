@@ -15,19 +15,20 @@ function Login() {
         setLoading(true)
         try {
             const data = await login(values.email, values.password)
-            if (data.success) {
+            if (data === "Access Denied.") {
+                navigate("/access-denied")
+            } else if (data.success) {
                 localStorage.setItem("token", data.token)
                 localStorage.setItem("role", data.role)
                 form.resetFields()
                 if (data.role === "user") {
                     navigate("/user/dashboard")
                 } else if (data.role === "admin") {
-                    navigate("/admin/dashbaord")
+                    navigate("/admin/dashboard")
                 }
             }
         } catch (error) {
             console.log(error);
-
         } finally {
             setLoading(false)
         }
@@ -62,7 +63,7 @@ function Login() {
                                     className="max-w-lg mx-auto"
                                 >
                                     <Form.Item
-                                        label="Current Password"
+                                        label="Your Email"
                                         name="email"
                                         rules={[
                                             { required: true, message: 'Please input your email!' },
@@ -71,7 +72,7 @@ function Login() {
                                     >
                                         <Input
                                             placeholder="Email"
-                                            className="h-10 bg-transparent rounded border-gray-300 focus:border-themeColor"
+                                            className="h-10"
                                         />
                                     </Form.Item>
 
@@ -82,7 +83,7 @@ function Login() {
                                     >
                                         <Input.Password
                                             placeholder="Password"
-                                            className="h-10 bg-transparent rounded border-gray-300 focus:border-themeColor"
+                                            className="h-10"
                                         />
                                     </Form.Item>
 

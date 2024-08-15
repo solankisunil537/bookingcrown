@@ -11,7 +11,15 @@ import ChangePassword from './pages/ChangePassword/ChangePassword';
 import AdminDashboard from './admin/pages/Dashboard/Dashboard';
 import ProtectedRoute from './services/protectedRoute/ProtectedRoute';
 import BookingDetail from './user/pages/BookingDetail/BookingDetail';
-import AddTables from './user/pages/AddTables/AddTables';
+import Profile from './user/pages/Profile/Profile';
+import ThankYou from './user/pages/ThankYou/ThankYou';
+import AccessDenied from './user/pages/AccessDenied/AccessDenied';
+import ProtectedAccessDenied from './services/protectedRoute/ProtectedAccessDenied';
+import NotFound from './pages/NotFound/NotFound';
+import ProtectedAdminRoute from './services/protectedRoute/ProtectedAdminRoute';
+import HourlyBookingDetail from './user/components/Hourly/HourlyBookingDetail';
+import DailyBookingDetail from './user/components/Daily/DailyBookingDetail';
+import CustomerDetail from './user/pages/CustomerDetail/CustomerDetail';
 
 function App() {
   return (
@@ -20,7 +28,13 @@ function App() {
         <Route path="/" element={<Home />} />
         <Route path="/login" element={<Login />} />
         <Route path="/signup" element={<Signup />} />
+        <Route path="/signup-confirmation" element={<ThankYou />} />
         <Route path="/change-password" element={<ChangePassword />} />
+        <Route path="/*" element={<NotFound />} />
+        <Route path="/customer/booking-details/:id" element={<CustomerDetail />} />
+        {/* <Route path="/admin/dashboard" element={<AdminDashboard />} /> */}
+        {/* <Route path="/access-denied" element={<AccessDenied />} /> */}
+        <Route path="/access-denied" element={<ProtectedAccessDenied element={AccessDenied} />} />
 
         {/* ------------------ protected routes ------------------ */}
         <Route path="/user/dashboard" element={<ProtectedRoute element={UserDashboard} requiredRole="user" />} />
@@ -28,9 +42,11 @@ function App() {
         <Route path="/user/booking-list" element={<ProtectedRoute element={BookingList} requiredRole="user" />} />
         <Route path="/user/booking-details/:id" element={<ProtectedRoute element={BookingDetail} requiredRole="user" />} />
         <Route path="/user/edit-booking/:id" element={<ProtectedRoute element={EditBooking} requiredRole="user" />} />
-        <Route path="/user/table-list" element={<ProtectedRoute element={AddTables} requiredRole="user" />} />
+        <Route path="/user/profile" element={<ProtectedRoute element={Profile} requiredRole="user" />} />
+        <Route path="/user/hourly-booking-details/:id" element={<ProtectedRoute element={HourlyBookingDetail} requiredRole="user" />} />
+        <Route path="/user/daily-booking-details/:id" element={<ProtectedRoute element={DailyBookingDetail} requiredRole="user" />} />
 
-        <Route path="/admin/dashboard" element={<ProtectedRoute element={AdminDashboard} requiredRole="admin" />} />
+        <Route path="/admin/dashboard" element={<ProtectedAdminRoute element={AdminDashboard} requiredRole="admin" />} />
 
       </Routes>
     </div>
