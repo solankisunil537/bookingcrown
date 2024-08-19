@@ -14,9 +14,9 @@ import { IoClose, IoHome, IoListSharp } from "react-icons/io5";
 import { MdEditDocument, MdLogout } from 'react-icons/md';
 import { Link, useLocation, useNavigate } from 'react-router-dom';
 import { FaUserCheck } from 'react-icons/fa';
-import { reset as resetBookings } from '../../features/bookings/BookingSlice';
-import { reset as resetUser } from '../../features/user/UserSlice';
-import { useDispatch } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
+import { resetUserData } from '../../features/user/UserSlice';
+import { resetBookingData } from '../../features/bookings/BookingSlice';
 
 const navigation = [
     { name: 'Dashboard', href: '/user/dashboard', icon: IoHome },
@@ -40,10 +40,11 @@ export default function Sidebar() {
     const navigate = useNavigate()
     const location = useLocation();
     const dispatch = useDispatch();
+    const { user } = useSelector((state) => state.user);
 
     const handleLogOut = async () => {
-        await dispatch(resetUser());
-        await dispatch(resetBookings());
+        await dispatch(resetUserData());
+        await dispatch(resetBookingData());
         await localStorage.clear()
         navigate("/")
     }
@@ -75,15 +76,15 @@ export default function Sidebar() {
                                 <div className="flex h-16 shrink-0 items-center border-b-[1px]">
                                     <img
                                         alt="Company"
-                                        src={require("../../assets/Logo1.jpg")}
+                                        src={require("../../assets/Logo3.jpg")}
                                         className="h-12 w-auto"
                                     />
                                     <h1 className='ms-3 cursor-pointer font-bold text-white text-[20px]'>Booking Crown</h1>
                                 </div>
                                 <nav className="flex flex-1 flex-col">
-                                    <ul role="list" className="flex flex-1 flex-col gap-y-7">
+                                    <ul className="flex flex-1 flex-col gap-y-7">
                                         <li>
-                                            <ul role="list" className="-mx-2 space-y-1">
+                                            <ul className="-mx-2 space-y-1">
                                                 {navigation.map((item) => (
                                                     <li key={item.name}>
                                                         <Link
@@ -134,15 +135,15 @@ export default function Sidebar() {
                         <div className="flex h-16 shrink-0 items-center border-b-[1px]">
                             <img
                                 alt="Company"
-                                src={require("../../assets/Logo1.jpg")}
+                                src={require("../../assets/Logo3.jpg")}
                                 className="h-12 w-auto"
                             />
                             <h1 className='ms-3 cursor-pointer font-bold text-white text-[20px]'>Booking Crown</h1>
                         </div>
                         <nav className="flex flex-1 flex-col">
-                            <ul role="list" className="flex flex-1 flex-col gap-y-7">
+                            <ul className="flex flex-1 flex-col gap-y-7">
                                 <li>
-                                    <ul role="list" className="-mx-2 space-y-2">
+                                    <ul className="-mx-2 space-y-2">
                                         {navigation.map((item) => (
                                             <li key={item.name}>
                                                 <Link
@@ -199,10 +200,13 @@ export default function Sidebar() {
                                     <MenuButton className="-m-1.5 flex items-center p-1.5">
                                         <span className="sr-only">Open user menu</span>
                                         <img
-                                            alt=""
-                                            src="https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=facearea&facepad=2&w=256&h=256&q=80"
+                                            alt="user"
+                                            src={require("../../assets/user.png")}
                                             className="h-8 w-8 rounded-full bg-gray-50"
                                         />
+                                        <span aria-hidden="true" className="ml-4 text-sm font-semibold leading-6 text-gray-900">
+                                            {user.data?.name}
+                                        </span>
                                         <span className="hidden lg:flex lg:items-center">
                                             <FaAngleDown aria-hidden="true" className="ml-2 h-5 w-5 text-gray-400" />
                                         </span>

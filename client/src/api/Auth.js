@@ -1,7 +1,8 @@
 import axios from "axios"
 import Notification from "../utilities/Notification"
+import axiosInstance from "../services/axiosInstance/AxiosInstance"
 
-const baseUrl = process.env.REACT_APP_BACKEND_URL
+const baseUrl = process.env.REACT_APP_BACKEND_URL + "/api"
 export const signup = async (name, mobilenu, email, businessType, businessName, address) => {
     try {
         const response = await axios.post(baseUrl + "/signup", {
@@ -37,7 +38,7 @@ export const login = async (email, password) => {
 
 export const changePassword = async (data) => {
     try {
-        const response = await axios.put(baseUrl + "/changePassword/66ae53bd1792bc4c86458f6c", data)
+        const response = await axiosInstance.put(baseUrl + "/changePassword", data)
         if (response.data) {
             Notification.success(response.data.message)
         }

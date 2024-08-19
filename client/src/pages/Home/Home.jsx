@@ -1,12 +1,12 @@
 import React from 'react'
 import AboutUs from '../../assets/asset_9.webp'
 import boxCricket from "../../assets/asset_4.jpg"
-import rastuarant from "../../assets/asset_5.webp"
-import event from "../../assets/asset_8.webp"
+import rastuarant from "../../assets/asset_0.jpg"
+import event from "../../assets/asset_8.jpg"
 import hotel from "../../assets/asset_7.jpeg"
 import '../../App.css'
-import { MdDashboard, MdEmail, MdOutlineEventAvailable, MdSpeakerNotes } from 'react-icons/md'
-import { IoCall, IoPeople } from 'react-icons/io5'
+import { MdDashboard, MdOutlineEventAvailable, MdSpeakerNotes } from 'react-icons/md'
+import { IoPeople } from 'react-icons/io5'
 import { FaLock, FaUserCheck } from 'react-icons/fa'
 import { IoMdNotifications, IoMdSettings } from 'react-icons/io'
 import Header from '../../common/Header'

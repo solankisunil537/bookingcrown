@@ -1,15 +1,17 @@
-import { Button, Card, Col, Form, Input, Row, Select } from "antd"
+import { Button, Card, Col, Form, Input, Row } from "antd"
 import Sidebar from "../../components/Sidebar"
 import { useDispatch, useSelector } from "react-redux";
 import { fetchUserData } from "../../../features/user/UserSlice";
 import { useEffect, useState } from "react";
 import { updateUserData } from "../../../api/User";
 import TextArea from "antd/es/input/TextArea";
+import { useNavigate } from "react-router-dom";
 const { Item } = Form;
 
 function Profile() {
     const [form] = Form.useForm();
     const dispatch = useDispatch()
+    const navigate = useNavigate()
     const { user, status } = useSelector((state) => state.user);
     const [isFormChanged, setIsFormChanged] = useState(false);
     const [initialValues, setInitialValues] = useState({});
@@ -40,16 +42,33 @@ function Profile() {
         }
     }, [status, user, form]);
 
+    const requiredFields = [
+        'name',
+        'email',
+        'mobileNumber',
+        'address',
+        'businessType',
+        'businessName'
+    ];
+
     const handleValuesChange = () => {
         const currentValues = form.getFieldsValue();
-        setIsFormChanged(JSON.stringify(currentValues) !== JSON.stringify(initialValues));
+        const allFieldsPresent = requiredFields.every(field => currentValues.hasOwnProperty(field));
+
+        if (!allFieldsPresent) {
+            console.warn("Form is missing required fields");
+            setIsFormChanged(false);
+        } else {
+            setIsFormChanged(JSON.stringify(currentValues) !== JSON.stringify(initialValues));
+        }
+
     };
 
     useEffect(() => {
         if (status === "idle") {
             dispatch(fetchUserData())
         }
-    }, [dispatch])
+    }, [dispatch, status])
 
     const onFinish = async (values) => {
         let itemList = [];
@@ -73,6 +92,7 @@ function Profile() {
         };
         try {
             await updateUserData(formData);
+            navigate("/user/dashboard")
         } catch (error) {
             console.error("Update error:", error);
         }

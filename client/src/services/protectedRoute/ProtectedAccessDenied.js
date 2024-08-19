@@ -4,7 +4,7 @@ import { useDispatch, useSelector } from 'react-redux';
 import { fetchUserData } from '../../features/user/UserSlice';
 import useToken from 'antd/es/theme/useToken';
 import Loader from '../../common/Loader';
-import moment from 'moment';
+import dayjs from 'dayjs';
 
 const ProtectedAccessDenied = ({ element: Component, ...rest }) => {
     const [isLoading, setIsLoading] = useState(true);
@@ -27,8 +27,8 @@ const ProtectedAccessDenied = ({ element: Component, ...rest }) => {
 
     useEffect(() => {
         if (status === 'succeeded' && user.plan) {
-            const currentDate = moment();
-            const planEndDate = moment(user.plan.endDate);
+            const currentDate = dayjs().startOf('day');
+            const planEndDate = dayjs(user.plan.endDate).startOf('day');
 
             if (planEndDate.isAfter(currentDate)) {
                 setCanAccess(false);
@@ -36,6 +36,8 @@ const ProtectedAccessDenied = ({ element: Component, ...rest }) => {
                 setCanAccess(true);
             }
             setIsLoading(false);
+        } else {
+            setCanAccess(true)
         }
     }, [status, user]);
 
@@ -43,7 +45,7 @@ const ProtectedAccessDenied = ({ element: Component, ...rest }) => {
         return <Loader />
     }
 
-    if (canAccess) {
+    if (!canAccess) {
         return <Component {...rest} />;
     }
 

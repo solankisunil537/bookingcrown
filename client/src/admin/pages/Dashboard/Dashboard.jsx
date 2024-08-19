@@ -7,7 +7,7 @@ import { fetchAllUsers } from '../../../features/user/UserSlice';
 import moment from 'moment';
 import io from 'socket.io-client';
 
-const socket = io('http://localhost:4000');
+const socket = io(process.env.REACT_APP_BACKEND_URL);
 
 function Dashboard() {
     const [activeKey, setActiveKey] = useState('1');

@@ -13,8 +13,8 @@ import { FaAngleDown, FaBars } from "react-icons/fa6";
 import { IoClose, IoHome } from "react-icons/io5";
 import { MdLogout } from 'react-icons/md';
 import { Link, useLocation, useNavigate } from 'react-router-dom';
-import { reset as resetBookings } from '../../features/bookings/BookingSlice';
-import { reset as resetUser } from '../../features/user/UserSlice';
+import { resetBookingData } from '../../features/bookings/BookingSlice';
+import { resetUserData } from '../../features/user/UserSlice';
 import { useDispatch } from 'react-redux';
 
 const navigation = [
@@ -36,11 +36,17 @@ export default function Sidebar() {
     const dispatch = useDispatch();
 
     const handleLogOut = async () => {
-        await dispatch(resetUser());
-        await dispatch(resetBookings());
-        await localStorage.clear()
-        navigate("/")
-    }
+        try {
+            await dispatch(resetUserData());
+            await dispatch(resetBookingData());
+            localStorage.clear();
+
+            navigate("/");
+        } catch (error) {
+            console.error("Error during logout:", error);
+        }
+    };
+
 
     return (
         <>
@@ -69,7 +75,7 @@ export default function Sidebar() {
                                 <div className="flex h-16 shrink-0 items-center border-b-[1px]">
                                     <img
                                         alt="Company"
-                                        src={require("../../assets/Logo1.jpg")}
+                                        src={require("../../assets/Logo3.jpg")}
                                         className="h-12 w-auto"
                                     />
                                     <h1 className='ms-3 cursor-pointer font-bold text-white text-[20px]'>Booking Crown</h1>
@@ -128,7 +134,7 @@ export default function Sidebar() {
                         <div className="flex h-16 shrink-0 items-center border-b-[1px]">
                             <img
                                 alt="Company"
-                                src={require("../../assets/Logo1.jpg")}
+                                src={require("../../assets/Logo3.jpg")}
                                 className="h-12 w-auto"
                             />
                             <h1 className='ms-3 cursor-pointer font-bold text-white text-[20px]'>Booking Crown</h1>
@@ -193,8 +199,8 @@ export default function Sidebar() {
                                     <MenuButton className="-m-1.5 flex items-center p-1.5">
                                         <span className="sr-only">Open user menu</span>
                                         <img
-                                            alt=""
-                                            src="https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=facearea&facepad=2&w=256&h=256&q=80"
+                                            alt="user"
+                                            src={require("../../assets/user.png")}
                                             className="h-8 w-8 rounded-full bg-gray-50"
                                         />
                                         <span className="hidden lg:flex lg:items-center">

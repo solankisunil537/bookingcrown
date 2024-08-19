@@ -12,7 +12,7 @@ function AddBooking() {
         if (status === "idle") {
             dispatch(fetchUserData())
         }
-    }, [dispatch])
+    }, [dispatch, status])
     return (
         <div>
             <Sidebar />

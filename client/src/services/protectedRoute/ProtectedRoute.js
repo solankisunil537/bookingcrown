@@ -4,7 +4,7 @@ import { getToken, getUserRole } from '../authService/AuthService';
 import { useDispatch, useSelector } from 'react-redux';
 import { fetchUserData } from '../../features/user/UserSlice';
 import Loader from '../../common/Loader';
-import moment from 'moment';
+import dayjs from 'dayjs';
 
 const ProtectedRoute = ({ element: Component, requiredRole, ...rest }) => {
     const [isLoading, setIsLoading] = useState(true);
@@ -28,9 +28,9 @@ const ProtectedRoute = ({ element: Component, requiredRole, ...rest }) => {
                 return;
             }
 
-            if (status === 'succeeded' && user.plan && user.plan.endDate) {
-                const currentDate = moment();
-                const planEndDate = moment(user.plan.endDate);
+            if (status === 'succeeded' && user.plan && user.plan?.endDate) {
+                const currentDate = dayjs().startOf('day');
+                const planEndDate = dayjs(user.plan?.endDate).startOf('day');
 
                 if (planEndDate.isBefore(currentDate)) {
                     setHasAccess(false);

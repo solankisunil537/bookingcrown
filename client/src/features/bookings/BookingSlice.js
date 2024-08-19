@@ -17,7 +17,7 @@ const BookingsSlice = createSlice({
         error: null,
     },
     reducers: {
-        reset: (state) => {
+        resetBookingData: (state) => {
             state.bookings = [];
             state.status = 'idle';
             state.error = null;
@@ -39,5 +39,5 @@ const BookingsSlice = createSlice({
     },
 });
 
-export const { reset } = BookingsSlice.actions;
+export const { resetBookingData } = BookingsSlice.actions;
 export default BookingsSlice.reducer;

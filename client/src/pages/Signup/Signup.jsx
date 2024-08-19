@@ -170,7 +170,7 @@ function Signup() {
                                         disabled={loading}
                                     >
                                         {loading && <Spin size="small" className="mr-2" />}
-                                        {loading ? 'Submitting...' : 'Submit'}
+                                        {loading ? 'Submitting...' : 'Sign up'}
                                     </Button>
                                 </Form.Item>
                             </Form>

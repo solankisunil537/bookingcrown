@@ -6,6 +6,7 @@ import Footer from '../../../common/Footer';
 
 function AccessDenied() {
     const navigate = useNavigate();
+
     return (
         <section className='bg-[#f1fafb]'>
             <main className='min-h-screen flex flex-col justify-center items-center py-8 px-4'>

@@ -1,8 +1,7 @@
 import { createSlice, createAsyncThunk } from '@reduxjs/toolkit';
 import axiosInstance from '../../services/axiosInstance/AxiosInstance';
-import axios from 'axios';
 
-const baseUrl = process.env.REACT_APP_BACKEND_URL
+const baseUrl = process.env.REACT_APP_BACKEND_URL + "/api"
 export const fetchUserData = createAsyncThunk(
     'user/fetchUserData',
     async () => {
@@ -14,7 +13,7 @@ export const fetchUserData = createAsyncThunk(
 export const fetchAllUsers = createAsyncThunk(
     'user/fetchAllUsers',
     async () => {
-        const response = await axios.get(baseUrl + '/getAllUsers');
+        const response = await axiosInstance.get(baseUrl + '/getAllUsers');
         return response.data.allUsers;
     }
 );
@@ -28,7 +27,7 @@ const UserSlice = createSlice({
         error: null,
     },
     reducers: {
-        reset: (state) => {
+        resetUserData: (state) => {
             state.allUsers = [];
             state.user = {};
             state.status = 'idle';
@@ -65,5 +64,5 @@ const UserSlice = createSlice({
     },
 });
 
-export const { reset } = UserSlice.actions;
+export const { resetUserData } = UserSlice.actions;
 export default UserSlice.reducer;

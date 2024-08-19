@@ -1,22 +1,12 @@
-import React, { useEffect, useState } from 'react';
+import React, { useState } from 'react';
 import { Tabs } from 'antd';
 import Sidebar from '../../components/Sidebar';
-import { useDispatch, useSelector } from 'react-redux';
-import { fetchUserData } from '../../../features/user/UserSlice';
 import CommonTable from '../../components/CommonTable';
 
 const { TabPane } = Tabs;
 
 function Dashboard() {
     const [activeKey, setActiveKey] = useState('1');
-    const dispatch = useDispatch()
-    const { user, status } = useSelector((state) => state.user);
-
-    useEffect(() => {
-        if (status === "idle") {
-            dispatch(fetchUserData())
-        }
-    }, [dispatch])
 
     return (
         <div>
@@ -36,8 +26,6 @@ function Dashboard() {
                         >
                             <TabPane tab="Upcoming Bookings" key="1">
                                 <CommonTable filter="upcoming" />
-                                {/* {user.data?.bookingType === "hourly" ? (<HourlyTable filter="upcoming" />) : (<DailyTable filter="upcoming" />)} */}
-
                             </TabPane>
                         </Tabs>
                     </div>

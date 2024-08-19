@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Button, DatePicker, Form, Modal, Select } from 'antd';
+import { Button, DatePicker, Form, Input, Modal, Select } from 'antd';
 import { createPlanData } from '../../api/Plan';
 import { useDispatch } from 'react-redux';
 import { fetchAllUsers } from '../../features/user/UserSlice';
@@ -33,7 +33,8 @@ const CreatePlan = ({ showModel, handleCancel, selectedId }) => {
             userId: selectedId,
             planType: values.plan,
             startDate: values.startDate,
-            endDate: values.endDate
+            endDate: values.endDate,
+            amount: values.amount
         }
         const response = await createPlanData(planData, selectedId)
         if (response) {
@@ -49,6 +50,7 @@ const CreatePlan = ({ showModel, handleCancel, selectedId }) => {
                 title="Create Plan For User"
                 open={showModel}
                 onCancel={handleCancel}
+                centered
                 footer={[
                     <Button key="cancel" onClick={handleCancel}>Cancel</Button>,
                     <Button key="submit" type='primary' loading={loading} onClick={handleOk}>Submit</Button>,
@@ -72,6 +74,16 @@ const CreatePlan = ({ showModel, handleCancel, selectedId }) => {
                                 { value: 'Basic', label: 'Basic' },
                                 { value: 'Premium', label: 'Premium' },
                             ]}
+                        />
+                    </Item>
+                    <Item
+                        name="amount"
+                        label="Amount"
+                        rules={[{ required: true, message: 'Please input amount!' }]}
+                    >
+                        <Input
+                            placeholder="Amount"
+                            className="h-10 border-gray-300"
                         />
                     </Item>
                     <Item

@@ -21,13 +21,14 @@ exports.createPlan = async (req, res) => {
             return res.status(404).json({ message: 'User not found' });
         }
 
-        const { planType, startDate, endDate } = req.body;
+        const { planType, startDate, endDate, amount } = req.body;
 
         const plan = new Plan({
             userId,
             planType,
             startDate,
-            endDate
+            endDate,
+            amount
         });
         await plan.save();
 

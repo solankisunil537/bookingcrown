@@ -12,7 +12,7 @@ function ChangePassword() {
         setLoading(true)
         const data = await changePassword(values)
         if (data.success) {
-            navigate("/login")
+            navigate("/user/profile")
         }
         setLoading(false)
     };

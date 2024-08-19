@@ -2,9 +2,7 @@ import { Link, useNavigate } from "react-router-dom";
 import { login } from "../../api/Auth";
 import { useState } from "react";
 import Footer from "../../common/Footer";
-import { Form, Input, Button, Typography, Spin } from 'antd';
-
-const { Text } = Typography;
+import { Form, Input, Button, Spin } from 'antd';
 
 function Login() {
     const [form] = Form.useForm();
@@ -87,13 +85,13 @@ function Login() {
                                         />
                                     </Form.Item>
 
-                                    <div className="mb-4">
+                                    {/* <div className="mb-4">
                                         <Text className="text-slate-600">
                                             <Link to="/change-password" className="!text-teal-500 hover:text-teal-700 font-semibold">
                                                 Change Password
                                             </Link>
                                         </Text>
-                                    </div>
+                                    </div> */}
 
                                     <Form.Item>
                                         <Button
@@ -103,7 +101,7 @@ function Login() {
                                             disabled={loading}
                                         >
                                             {loading && <Spin size="small" className="mr-2" />}
-                                            {loading ? 'Signing in...' : 'SignIn'}
+                                            {loading ? 'Signing in...' : 'Sign In'}
                                         </Button>
                                     </Form.Item>
                                 </Form>

@@ -30,7 +30,7 @@ exports.createBookings = async (req, res) => {
 
 exports.updateBookingDetails = async (req, res) => {
     try {
-        const { name, phone, date, time, turfOrTable, totalHours, amount, advance, pending, bookingType, session } = req.body;
+        const { name, phone, date, time, turfOrTable, totalHours, amount, advance, pending, bookingType, session, item } = req.body;
 
         const booking = await Bookings.findByIdAndUpdate(req.params.id, {
             name,
@@ -43,7 +43,8 @@ exports.updateBookingDetails = async (req, res) => {
             advance,
             pending,
             bookingType,
-            session
+            session,
+            item
         }, { new: true });
 
         if (!booking) return res.status(404).json({ error: 'Booking not found' });

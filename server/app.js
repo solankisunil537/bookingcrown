@@ -1,10 +1,8 @@
 const express = require('express');
 const db = require('./utils/db');
 const http = require('http');
-// const socketIo = require('socket.io');
 const UserRouter = require('./routes/UserRouter');
 const BookingRouter = require('./routes/BookingRouter');
-const TableRouter = require('./routes/TableRouter');
 const PlanRouter = require('./routes/PlanRouter');
 const app = express();
 const PORT = process.env.PORT || 4000;
@@ -20,7 +18,7 @@ app.use(cors())
 
 const io = new Server(server, {
     cors: {
-        origin: 'http://localhost:3000',
+        origin: process.env.CLIENT_BASEURL,
         methods: ['GET', 'POST']
     }
 })
@@ -31,7 +29,6 @@ app.get('/', (req, res) => {
 
 app.use('/api', UserRouter);
 app.use('/api', BookingRouter);
-app.use('/api', TableRouter);
 app.use('/api', PlanRouter);
 
 io.on('connection', (socket) => {

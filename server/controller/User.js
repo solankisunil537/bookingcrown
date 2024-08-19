@@ -2,6 +2,7 @@ const User = require("../model/User");
 const jwt = require('jsonwebtoken');
 const bcrypt = require("bcryptjs");
 const Plan = require("../model/Plan");
+const dayjs = require('dayjs');
 const JWT_SECRET = process.env.JWT_SECRET
 
 exports.createUser = async (req, res) => {
@@ -75,7 +76,6 @@ exports.updateUser = async (req, res) => {
     }
 };
 
-
 exports.loginUser = async (req, res) => {
     const { email, password } = req.body;
 
@@ -91,8 +91,8 @@ exports.loginUser = async (req, res) => {
         }
 
         if (user.role === "user") {
-            const plan = await Plan.findOne({ userId: user._id });
-            if (!plan || plan.endDate < new Date()) {
+            const plan = await Plan.findOne({ userId: user._id }).sort({ createdAt: -1 });
+            if (!plan || dayjs(plan.endDate).isBefore(dayjs().startOf('day'))) {
                 return res.status(403).json({ message: 'Access Denied.', success: false });
             }
         }
@@ -161,7 +161,7 @@ exports.changePassword = async (req, res) => {
             });
         }
 
-        const user = await User.findById(req.params.id);
+        const user = await User.findById(req.user.id);
 
         if (!user) {
             return res.status(404).json({ message: 'User not found' });
@@ -172,10 +172,7 @@ exports.changePassword = async (req, res) => {
             return res.status(400).json({ message: 'Current password is incorrect' });
         }
 
-        const salt = await bcrypt.genSalt(10);
-        const hashedPassword = await bcrypt.hash(newPassword, salt);
-
-        user.password = hashedPassword;
+        user.password = newPassword;
         await user.save();
 
         res.status(200).json({ success: true, message: 'Password updated successfully' });
@@ -183,35 +180,6 @@ exports.changePassword = async (req, res) => {
         res.status(500).json({ error: error.message });
     }
 };
-
-exports.createTableList = async (req, res) => {
-    try {
-        const userId = req.params.id;
-        const { tableNumber } = req.body;
-
-        if (!userId || !tableNumber) {
-            return res.status(400).json({ message: 'User ID and Table Number are required' });
-        }
-
-        const parsedTableNumber = parseInt(tableNumber, 10);
-        if (isNaN(parsedTableNumber) || parsedTableNumber <= 0) {
-            return res.status(400).json({ message: 'Invalid table number provided' });
-        }
-
-        const tableNumbers = Array.from({ length: parsedTableNumber }, (_, i) => i + 1);
-
-        const newTable = await User.findByIdAndUpdate(
-            { _id: userId },
-            { tableList: tableNumbers },
-            { new: true, upsert: true }
-        );
-
-        res.status(200).json({ newTable, success: true, message: "Table List added successfully" });
-    } catch (error) {
-        console.error("Error creating table list:", error);
-        res.status(500).json({ error, message: error.message });
-    }
-}
 
 exports.getUserData = async (req, res) => {
     try {
@@ -257,3 +225,32 @@ exports.getAllUsers = async (req, res) => {
         res.status(400).json({ error: error.message });
     }
 };
+
+exports.updateUserByAdmin = async (req, res) => {
+    try {
+        const userId = req.params.id;
+        const { bType } = req.body;
+
+        if (!userId) {
+            return res.status(400).json({ message: "User ID not provided!" });
+        }
+
+        if (!bType) {
+            return res.status(400).json({ message: "Business type not provided!" });
+        }
+        const user = await User.findByIdAndUpdate(
+            userId,
+            { businessType: bType },
+            { new: true }
+        );
+
+        if (!user) {
+            return res.status(404).json({ message: "User not found!" });
+        }
+
+        res.status(200).json({ success: true, message: 'User details updated successfully!', user });
+    } catch (error) {
+        console.error(error.message);
+        res.status(500).send('Server error');
+    }
+}

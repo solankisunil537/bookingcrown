@@ -26,9 +26,9 @@ function Header() {
                         <div className="flex flex-1 items-center justify-center sm:items-stretch sm:justify-start">
                             <div className="flex flex-shrink-0 items-center">
                                 <img
-                                    alt="Your Company"
-                                    src={require("../assets/Logo1.jpg")}
-                                    className="h-12 w-auto"
+                                    alt="Company"
+                                    src={require("../assets/Logo.png")}
+                                    className="h-16 w-auto"
                                 />
                             </div>
                             <div className="hidden sm:ml-6 sm:flex sm:space-x-8">
@@ -91,14 +91,14 @@ function Header() {
                                         onClick={() => navigate("/login")}
                                         className="rounded-lg bg-themeColor text-white focus:outline-none focus:ring-2 focus:ring-themeColor focus:ring-offset-2 p-[5px_9px]"
                                     >
-                                        Login
+                                        Log in
                                     </button>
                                     <button
                                         type="button"
                                         onClick={() => navigate("/signup")}
                                         className="rounded-lg bg-themeColor text-white focus:outline-none focus:ring-2 focus:ring-themeColor ms-1 md:ms-4 focus:ring-offset-2 p-[5px_9px]"
                                     >
-                                        Signup
+                                        Sign up
                                     </button>
                                 </>
                             )}

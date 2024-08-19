@@ -1,4 +1,4 @@
-import { Button, Col, DatePicker, Form, Input, Row, Select, TimePicker } from 'antd'
+import { Button, Col, DatePicker, Form, Input, Row, Select } from 'antd'
 import React, { useEffect, useState } from 'react'
 import { useDispatch } from 'react-redux';
 import { getUserData } from '../../../api/User';
@@ -7,7 +7,6 @@ import { CreateBooking, getBookingById, UpdateBooking } from '../../../api/Booki
 import { fetchAllBookings } from '../../../features/bookings/BookingSlice';
 import { useNavigate } from 'react-router-dom';
 import dayjs from 'dayjs';
-const { RangePicker } = TimePicker;
 const { Item } = Form;
 
 function DailyForm({ isEditing, userId }) {
@@ -89,6 +88,7 @@ function DailyForm({ isEditing, userId }) {
         await dispatch(fetchAllBookings())
         navigate("/user/booking-list")
     }
+
     return (
         <div>
             <Form
@@ -138,7 +138,7 @@ function DailyForm({ isEditing, userId }) {
                             rules={[{ required: true, message: 'Please select a table!' }]}
                         >
                             <Select
-                                placeholder="Select Farm/Table"
+                                placeholder="Select Farm/Hotel"
                                 className='h-10'
                                 options={
                                     userData.itemList?.map((item) => ({

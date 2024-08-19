@@ -1,7 +1,6 @@
 import { Card, Col, Row, Skeleton, Typography, Watermark } from 'antd'
 import React, { useEffect, useState } from 'react'
 import { useParams } from 'react-router-dom'
-import Logo from "../../../assets/Logo1.jpg"
 import { getBookingById } from '../../../api/Bookings';
 
 const { Text } = Typography;
@@ -16,6 +15,7 @@ function CustomerDetail() {
         fontSize: 18,
         offset: 8,
     });
+
     const { content, color, fontSize, offset } = config;
     const watermarkProps = {
         content,

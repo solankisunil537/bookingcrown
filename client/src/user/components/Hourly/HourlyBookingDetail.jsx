@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { Link, useParams } from 'react-router-dom';
+import { useParams } from 'react-router-dom';
 import { Card, Col, Row, Typography, Skeleton, Button } from 'antd';
 import { getBookingById } from '../../../api/Bookings';
 import Sidebar from '../Sidebar';

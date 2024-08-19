@@ -1,21 +1,13 @@
-import React, { useEffect } from 'react'
+import React from 'react'
 import Sidebar from '../../components/Sidebar'
 import { useParams } from 'react-router-dom';
 import HourlyForm from '../../components/Hourly/HourlyForm';
 import DailyForm from '../../components/Daily/DailyForm';
-import { useDispatch, useSelector } from 'react-redux';
-import { fetchUserData } from '../../../features/user/UserSlice';
+import { useSelector } from 'react-redux';
 
 function EditBooking() {
     const params = useParams()
-
-    const dispatch = useDispatch()
-    const { user, status } = useSelector((state) => state.user);
-    useEffect(() => {
-        if (status === "idle") {
-            dispatch(fetchUserData())
-        }
-    }, [dispatch])
+    const { user } = useSelector((state) => state.user);
 
     return (
         <div>

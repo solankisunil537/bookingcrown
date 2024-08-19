@@ -1,4 +1,4 @@
-import { DatePicker, Input, Modal, Select, Table } from 'antd';
+import { DatePicker, Input, Modal, Select, Spin, Table } from 'antd';
 import React, { useEffect, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import moment from 'moment';
@@ -31,7 +31,10 @@ const commonColumns = [
         title: 'Booking Date',
         dataIndex: 'date',
         key: 'date',
-        render: (text) => new Date(text).toLocaleDateString("en-GB"),
+        render: (text, record) => {
+            if (record.key === 'total') return null;
+            return (new Date(text).toLocaleDateString("en-GB"))
+        },
         align: 'center',
         responsive: ['xs', 'sm'],
     }
@@ -92,23 +95,29 @@ const actionColumns = (handleEdit, handleDelete, navigateDetailPage) => [
         key: 'details',
         align: 'center',
         responsive: ['xs', 'sm'],
-        render: (text, record) => (
-            <div>
-                <FaInfoCircle onClick={() => navigateDetailPage(record)} type="link" className='text-[20px] text-themeColor m-auto' />
-            </div>
-        )
+        render: (text, record) => {
+            if (record.key === 'total') return null;
+            return (
+                <div>
+                    <FaInfoCircle onClick={() => navigateDetailPage(record)} type="link" className='text-[20px] text-themeColor m-auto' />
+                </div>
+            );
+        }
     },
     {
         title: 'Actions',
         key: 'actions',
         align: 'center',
         responsive: ['xs', 'sm'],
-        render: (text, record) => (
-            <div className='flex'>
-                <FaEdit onClick={() => handleEdit(record.key)} type="link" className="mr-2 text-[18px] text-themeColor" />
-                <MdDelete onClick={() => handleDelete(record.key)} type="link" danger className='text-[18px] text-red-600' />
-            </div>
-        ),
+        render: (text, record) => {
+            if (record.key === 'total') return null;
+            return (
+                <div className='flex'>
+                    <FaEdit onClick={() => handleEdit(record.key)} type="link" className="mr-2 text-[18px] text-themeColor" />
+                    <MdDelete onClick={() => handleDelete(record.key)} type="link" danger className='text-[18px] text-red-600' />
+                </div>
+            );
+        },
     },
 ];
 
@@ -117,6 +126,8 @@ function CommonTable({ filter }) {
     const [searchText, setSearchText] = useState('');
     const [selectedMonth, setSelectedMonth] = useState(null);
     const [selectedDate, setSelectedDate] = useState(null);
+    const [currentPage, setCurrentPage] = useState(1);
+    const [loading, setLoading] = useState(true);
     const navigate = useNavigate();
     const { bookings, status } = useSelector((state) => state.bookings);
     const userState = useSelector((state) => state.user);
@@ -128,10 +139,14 @@ function CommonTable({ filter }) {
     }, [status, dispatch]);
 
     useEffect(() => {
+        if (status !== "idle") { setLoading(false) }
+    }, [status])
+
+    useEffect(() => {
         if (userState.status === "idle") {
             dispatch(fetchUserData())
         }
-    }, [dispatch])
+    }, [dispatch, userState.status])
 
     const months = Array.from({ length: 12 }, (_, i) => moment().month(i).format('MMMM'));
 
@@ -201,9 +216,35 @@ function CommonTable({ filter }) {
         }
     };
 
-    const totalHours = userState.user.data?.bookingType === 'hourly'
-        ? filteredData.reduce((sum, booking) => sum + (booking.totalHours || 0), 0)
+    const getCurrentPageData = () => {
+        const pageSize = 10;
+        const startIndex = (currentPage - 1) * pageSize;
+        const endIndex = startIndex + pageSize;
+
+        return filteredData.slice(startIndex, endIndex);
+    };
+
+    const totalHoursPerPage = userState.user.data?.bookingType === 'hourly'
+        ? getCurrentPageData().reduce((sum, booking) => sum + (booking.totalHours || 0), 0)
         : null;
+
+    const totalRow = userState.user.data?.bookingType === 'hourly' && filteredData.length > 0
+        ? [{
+            key: 'total',
+            customerName: 'Total Hours',
+            totalHours: totalHoursPerPage,
+            mobilenu: '',
+            startTime: '',
+            endTime: '',
+            item: '',
+            session: '',
+        }]
+        : [];
+
+    const dataSourceWithTotalRow = [
+        ...filteredData,
+        ...totalRow
+    ];
 
     const columns = [
         ...commonColumns,
@@ -240,15 +281,19 @@ function CommonTable({ filter }) {
                     className='w-full md:w-1/3'
                 />
             </div>
-            <div className='custom-scrollbar'>
+            <div>
                 <Table
-                    rowKey="key"
                     columns={columns}
-                    dataSource={filteredData}
-                    pagination={{ pageSize: 10 }}
+                    dataSource={dataSourceWithTotalRow}
+                    pagination={{ pageSize: 10, onChange: (page) => setCurrentPage(page) }}
                     scroll={{ x: 'max-content' }}
+                    loading={{
+                        indicator: <Spin size="large" />,
+                        spinning: loading
+                    }}
                     size='middle'
-                    className='border border-gray-300 rounded-lg' />
+                    className='border border-gray-300 rounded-lg'
+                />
             </div>
         </div>
     );

@@ -1,7 +1,7 @@
 import axios from "axios"
 import Notification from "../utilities/Notification"
 
-const baseUrl = process.env.REACT_APP_BACKEND_URL
+const baseUrl = process.env.REACT_APP_BACKEND_URL + "/api"
 
 export const createPlanData = async (values, id) => {
     try {
