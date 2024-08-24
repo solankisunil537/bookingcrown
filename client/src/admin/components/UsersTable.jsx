@@ -72,7 +72,7 @@ const columns = (activeKey, showModal, editRecord, handleSaveEdit, setEditRecord
             align: "center"
         },
         {
-            title: 'Amount',
+            title: 'Amount (₹)',
             dataIndex: 'amount',
             align: "center"
         },

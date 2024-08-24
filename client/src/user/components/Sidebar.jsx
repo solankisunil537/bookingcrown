@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import {
     Dialog,
     DialogBackdrop,
@@ -41,6 +41,8 @@ export default function Sidebar() {
     const location = useLocation();
     const dispatch = useDispatch();
     const { user } = useSelector((state) => state.user);
+
+    useEffect(() => { }, [user])
 
     const handleLogOut = async () => {
         await dispatch(resetUserData());
@@ -199,14 +201,14 @@ export default function Sidebar() {
                                 <Menu as="div" className="relative">
                                     <MenuButton className="-m-1.5 flex items-center p-1.5">
                                         <span className="sr-only">Open user menu</span>
+                                        <span aria-hidden="true" className="mr-4 text-sm font-semibold leading-6 text-gray-900">
+                                            {user.data?.name} - {user.data?.businessName}
+                                        </span>
                                         <img
                                             alt="user"
                                             src={require("../../assets/user.png")}
                                             className="h-8 w-8 rounded-full bg-gray-50"
                                         />
-                                        <span aria-hidden="true" className="ml-4 text-sm font-semibold leading-6 text-gray-900">
-                                            {user.data?.name}
-                                        </span>
                                         <span className="hidden lg:flex lg:items-center">
                                             <FaAngleDown aria-hidden="true" className="ml-2 h-5 w-5 text-gray-400" />
                                         </span>

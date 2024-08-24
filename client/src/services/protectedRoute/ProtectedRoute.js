@@ -28,7 +28,7 @@ const ProtectedRoute = ({ element: Component, requiredRole, ...rest }) => {
                 return;
             }
 
-            if (status === 'succeeded' && user.plan && user.plan?.endDate) {
+            if (status === 'succeeded' && user?.data?.plan && user?.data?.plan?.endDate) {
                 const currentDate = dayjs().startOf('day');
                 const planEndDate = dayjs(user.plan?.endDate).startOf('day');
 

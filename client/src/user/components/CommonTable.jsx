@@ -1,4 +1,4 @@
-import { DatePicker, Input, Modal, Select, Spin, Table } from 'antd';
+import { Button, DatePicker, Form, Input, Modal, Popover, Select, Spin, Table, Tag } from 'antd';
 import React, { useEffect, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import moment from 'moment';
@@ -8,9 +8,11 @@ import { MdDelete } from 'react-icons/md';
 import { fetchAllBookings } from '../../features/bookings/BookingSlice';
 import { fetchUserData } from '../../features/user/UserSlice';
 import { DeleteBooking } from '../../api/Bookings';
+import UpdatePayment from '../model/UpdatePayment';
 
 const { confirm } = Modal;
 const { Option } = Select;
+const { Item } = Form;
 
 const commonColumns = [
     {
@@ -88,7 +90,22 @@ const dailyColumns = [
     },
 ];
 
-const actionColumns = (handleEdit, handleDelete, navigateDetailPage) => [
+const actionColumns = (handleEdit, handleDelete, navigateDetailPage, showModal) => [
+    {
+        title: 'Payment',
+        dataIndex: 'payment',
+        key: 'payment',
+        align: 'center',
+        responsive: ['xs', 'sm'],
+        render: (text, record) => {
+            if (record.key === 'total') return null;
+            return (
+                <div className='cursor-pointer'>
+                    <Tag color="magenta" onClick={() => showModal(record)} >{record.payment}</Tag>
+                </div>
+            )
+        }
+    },
     {
         title: 'View Details',
         dataIndex: 'details',
@@ -128,9 +145,12 @@ function CommonTable({ filter }) {
     const [selectedDate, setSelectedDate] = useState(null);
     const [currentPage, setCurrentPage] = useState(1);
     const [loading, setLoading] = useState(true);
+    const [open, setOpen] = useState(false);
+    const [selectedRecord, setSelectedRecord] = useState({});
     const navigate = useNavigate();
     const { bookings, status } = useSelector((state) => state.bookings);
     const userState = useSelector((state) => state.user);
+    const months = Array.from({ length: 12 }, (_, i) => moment().month(i).format('MMMM'));
 
     useEffect(() => {
         if (status === 'idle') {
@@ -147,8 +167,6 @@ function CommonTable({ filter }) {
             dispatch(fetchUserData())
         }
     }, [dispatch, userState.status])
-
-    const months = Array.from({ length: 12 }, (_, i) => moment().month(i).format('MMMM'));
 
     const filteredData = bookings
         .filter((booking) => {
@@ -185,7 +203,11 @@ function CommonTable({ filter }) {
             endTime: booking.time?.end,
             item: booking.item,
             totalHours: booking.totalHours,
-            session: booking.session
+            session: booking.session,
+            payment: booking.payment,
+            amount: booking.amount,
+            advance: booking.advance,
+            pending: booking.pending
         }))
         .sort((a, b) => new Date(a.date) - new Date(b.date));
 
@@ -224,6 +246,16 @@ function CommonTable({ filter }) {
         return filteredData.slice(startIndex, endIndex);
     };
 
+    const showModal = (record) => {
+        setSelectedRecord(record);
+        setOpen(true);
+    };
+
+    const handleCancel = () => {
+        setOpen(false);
+        dispatch(fetchAllBookings())
+    };
+
     const totalHoursPerPage = userState.user.data?.bookingType === 'hourly'
         ? getCurrentPageData().reduce((sum, booking) => sum + (booking.totalHours || 0), 0)
         : null;
@@ -249,7 +281,7 @@ function CommonTable({ filter }) {
     const columns = [
         ...commonColumns,
         ...(userState.user.data?.bookingType === 'hourly' ? hourlyColumns : dailyColumns),
-        ...actionColumns(handleEdit, handleDelete, navigateDetailPage),
+        ...actionColumns(handleEdit, handleDelete, navigateDetailPage, showModal),
     ];
 
     return (
@@ -295,6 +327,8 @@ function CommonTable({ filter }) {
                     className='border border-gray-300 rounded-lg'
                 />
             </div>
+
+            <UpdatePayment showModel={open} handleCancel={handleCancel} selectedRecord={selectedRecord} />
         </div>
     );
 }

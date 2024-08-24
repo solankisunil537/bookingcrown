@@ -1,40 +1,31 @@
-import { Link, useNavigate } from "react-router-dom";
-import { login } from "../../api/Auth";
+import React from 'react'
 import { useState } from "react";
 import Footer from "../../common/Footer";
 import { Form, Input, Button, Spin } from 'antd';
+import { useNavigate } from "react-router-dom";
+import { forgetPassword } from '../../api/Auth';
 
-function Login() {
-    const [form] = Form.useForm();
+function ForgetPassword() {
     const [loading, setLoading] = useState(false);
     const navigate = useNavigate()
 
     const onFinish = async (values) => {
         setLoading(true)
         try {
-            const data = await login(values.email, values.password)
-            if (data === "Access Denied.") {
-                navigate("/access-denied")
-            } else if (data.success) {
-                localStorage.setItem("token", data.token)
-                localStorage.setItem("role", data.role)
-                form.resetFields()
-                if (data.role === "user") {
-                    navigate("/user/dashboard")
-                } else if (data.role === "admin") {
-                    navigate("/admin/dashboard")
-                }
+            const response = await forgetPassword(values.email)
+            if (response) {
+                navigate("/login")
             }
         } catch (error) {
-            console.log(error);
+            console.log(error)
         } finally {
             setLoading(false)
         }
-    };
+    }
 
     return (
-        <>
-            <section className="flex items-center justify-center py-12 px-4 min-h-screen">
+        <div>
+            <section className="flex items-center justify-center px-4 min-h-screen">
                 <div className="grid md:grid-cols-12 grid-cols-1 gap-8 items-center">
                     <div className="lg:col-span-6 md:col-span-6 hidden lg:flex justify-center">
                         <img
@@ -47,10 +38,10 @@ function Login() {
                         <div className="max-w-[700px] w-full bg-white rounded-md shadow p-6">
                             <div className="pb-6 text-center">
                                 <h3 className="font-semibold text-2xl leading-normal mb-4">
-                                    Sign In To Your Account
+                                    Forgot Your Password
                                 </h3>
                                 <p className="text-slate-400 max-w-xl mx-auto">
-                                    Welcome back! Please sign in to access your account.
+                                    Lost your password? Please enter your registered email address. You will receive new strong password via email.
                                 </p>
                             </div>
                             <div className="bg-white rounded-md p-6">
@@ -74,40 +65,18 @@ function Login() {
                                         />
                                     </Form.Item>
 
-                                    <Form.Item
-                                        label="Your Password"
-                                        name="password"
-                                        rules={[{ required: true, message: 'Please input your password!' }]}
-                                    >
-                                        <Input.Password
-                                            placeholder="Password"
-                                            className="h-10"
-                                        />
-                                    </Form.Item>
-
-                                    <div>
-                                        <Link to="/forget-password" className="!text-themeColor hover:text-teal-700 font-semibold">
-                                            Forget Password
-                                        </Link>
-                                    </div>
-
                                     <Form.Item>
                                         <Button
                                             type="primary"
                                             htmlType="submit"
-                                            className={`h-10 w-full tracking-wide inline-flex items-center justify-center font-medium rounded-md ${loading ? '!bg-[#0f766e]' : 'bg-teal-500'} text-white mt-5`}
+                                            className={`h-10 w-full tracking-wide inline-flex items-center justify-center font-medium rounded-md ${loading ? '!bg-[#0f766e] !text-white' : 'bg-teal-500'} text-white mt-5`}
                                             disabled={loading}
                                         >
                                             {loading && <Spin size="small" className="mr-2" />}
-                                            {loading ? 'Signing in...' : 'Sign In'}
+                                            {loading ? 'Sending New Password...' : 'Send New Password'}
                                         </Button>
                                     </Form.Item>
                                 </Form>
-                            </div>
-                            <div className="mt-6 text-center">
-                                <p className="text-slate-600">
-                                    Don't have an account? <Link to="/signup" className="text-teal-500 hover:text-teal-700 font-semibold">Register</Link>
-                                </p>
                             </div>
                         </div>
                     </div>
@@ -115,8 +84,8 @@ function Login() {
             </section>
 
             <Footer />
-        </>
-    );
+        </div>
+    )
 }
 
-export default Login;
+export default ForgetPassword

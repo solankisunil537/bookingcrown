@@ -56,7 +56,7 @@ UserSchema.pre('save', async function (next) {
 });
 
 UserSchema.pre('save', function (next) {
-    if (this.isNew) {
+    if (this.isNew || this.isModified('businessType')) {
         if (["Box Cricket", "Cafe/Restuarant"].includes(this.businessType)) {
             this.bookingType = 'hourly';
         } else {
@@ -65,6 +65,7 @@ UserSchema.pre('save', function (next) {
     }
     next();
 });
+
 
 // Compare entered password with hashed password
 // UserSchema.methods.matchPassword = function (enteredPassword) {

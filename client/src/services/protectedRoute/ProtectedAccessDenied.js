@@ -14,11 +14,11 @@ const ProtectedAccessDenied = ({ element: Component, ...rest }) => {
     const { user, status } = useSelector((state) => state.user);
 
     useEffect(() => {
-        if (!token) {
-            setIsLoading(false);
-            setCanAccess(false);
-            return
-        }
+        // if (!token) {
+        //     setIsLoading(false);
+        //     setCanAccess(false);
+        //     return
+        // }
 
         if (status === 'idle') {
             dispatch(fetchUserData());
@@ -26,7 +26,7 @@ const ProtectedAccessDenied = ({ element: Component, ...rest }) => {
     }, [dispatch, status]);
 
     useEffect(() => {
-        if (status === 'succeeded' && user.plan) {
+        if (status !== 'idle' && user?.data?.plan) {
             const currentDate = dayjs().startOf('day');
             const planEndDate = dayjs(user.plan.endDate).startOf('day');
 
@@ -36,8 +36,9 @@ const ProtectedAccessDenied = ({ element: Component, ...rest }) => {
                 setCanAccess(true);
             }
             setIsLoading(false);
-        } else {
+        } else if (Object.values(user).length === 0) {
             setCanAccess(true)
+            setIsLoading(false)
         }
     }, [status, user]);
 

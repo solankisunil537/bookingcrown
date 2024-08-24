@@ -78,7 +78,7 @@ const CreatePlan = ({ showModel, handleCancel, selectedId }) => {
                     </Item>
                     <Item
                         name="amount"
-                        label="Amount"
+                        label="Amount (₹)"
                         rules={[{ required: true, message: 'Please input amount!' }]}
                     >
                         <Input

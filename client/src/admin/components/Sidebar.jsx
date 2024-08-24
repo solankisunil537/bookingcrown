@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import {
     Dialog,
     DialogBackdrop,
@@ -14,8 +14,8 @@ import { IoClose, IoHome } from "react-icons/io5";
 import { MdLogout } from 'react-icons/md';
 import { Link, useLocation, useNavigate } from 'react-router-dom';
 import { resetBookingData } from '../../features/bookings/BookingSlice';
-import { resetUserData } from '../../features/user/UserSlice';
-import { useDispatch } from 'react-redux';
+import { fetchUserData, resetUserData } from '../../features/user/UserSlice';
+import { useDispatch, useSelector } from 'react-redux';
 
 const navigation = [
     { name: 'Dashboard', href: '/admin/dashboard', icon: IoHome },
@@ -31,9 +31,16 @@ function classNames(...classes) {
 
 export default function Sidebar() {
     const [sidebarOpen, setSidebarOpen] = useState(false)
+    const { user, status } = useSelector((state) => state.user);
     const navigate = useNavigate()
     const location = useLocation();
     const dispatch = useDispatch();
+
+    useEffect(() => {
+        if (status === "idle") {
+            dispatch(fetchUserData())
+        }
+    }, [dispatch, status])
 
     const handleLogOut = async () => {
         try {
@@ -198,6 +205,9 @@ export default function Sidebar() {
                                 <Menu as="div" className="relative">
                                     <MenuButton className="-m-1.5 flex items-center p-1.5">
                                         <span className="sr-only">Open user menu</span>
+                                        <span aria-hidden="true" className="mr-4 text-sm font-semibold leading-6 text-gray-900">
+                                            {user.data?.name}
+                                        </span>
                                         <img
                                             alt="user"
                                             src={require("../../assets/user.png")}

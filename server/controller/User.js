@@ -3,6 +3,8 @@ const jwt = require('jsonwebtoken');
 const bcrypt = require("bcryptjs");
 const Plan = require("../model/Plan");
 const dayjs = require('dayjs');
+const { generateStrongPassword, generateNewPasswordText } = require("../utils/helper");
+const { emailTransporter } = require("../utils/emailTranspoter");
 const JWT_SECRET = process.env.JWT_SECRET
 
 exports.createUser = async (req, res) => {
@@ -180,6 +182,33 @@ exports.changePassword = async (req, res) => {
         res.status(500).json({ error: error.message });
     }
 };
+
+exports.forgetPassword = async (req, res) => {
+    try {
+        const { email } = req.body
+        const user = await User.findOne({ email })
+        if (!user) {
+            return res.status(404).json({ message: 'User not found' });
+        }
+        const newGeneratedPassword = generateStrongPassword()
+        user.password = newGeneratedPassword
+        await user.save()
+
+        const transporter = await emailTransporter();
+
+        await transporter.sendMail({
+            from: process.env.SMTP_USER,
+            to: user.email,
+            subject: 'Your new password',
+            text: generateNewPasswordText(user.name, newGeneratedPassword)
+        });
+
+        res.status(200).json({ message: 'New password sent to your email address', success: true });
+    } catch (error) {
+        console.error('Error during password reset:', error);
+        res.status(500).json({ message: 'An error occurred while resetting the password' });
+    }
+}
 
 exports.getUserData = async (req, res) => {
     try {

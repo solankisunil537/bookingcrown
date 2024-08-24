@@ -1,12 +1,22 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { Tabs } from 'antd';
 import Sidebar from '../../components/Sidebar';
 import CommonTable from '../../components/CommonTable';
+import { fetchUserData } from '../../../features/user/UserSlice';
+import { useDispatch, useSelector } from 'react-redux';
 
 const { TabPane } = Tabs;
 
 function Dashboard() {
     const [activeKey, setActiveKey] = useState('1');
+    const { status } = useSelector((state) => state.user);
+    const dispatch = useDispatch()
+
+    useEffect(() => {
+        if (status === "idle") {
+            dispatch(fetchUserData())
+        }
+    }, [dispatch, status])
 
     return (
         <div>

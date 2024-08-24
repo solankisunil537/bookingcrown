@@ -2,9 +2,9 @@ const mongoose = require('mongoose');
 
 const bookingSchema = new mongoose.Schema({
     userId: { type: mongoose.Schema.Types.ObjectId, ref: 'User', required: true },
-    customerName: { type: String, required: true },
-    mobilenu: { type: Number, required: true },
-    date: { type: Date, required: true },
+    customerName: { type: String },
+    mobilenu: { type: Number },
+    date: { type: Date },
     time: {
         start: { type: String },
         end: { type: String }
@@ -22,7 +22,7 @@ const bookingSchema = new mongoose.Schema({
 });
 
 bookingSchema.pre('save', function (next) {
-    if (this.advance >= this.amount) {
+    if (this.advance === this.amount || this.pending === 0) {
         this.payment = 'paid';
     } else if (this.advance > 0) {
         this.payment = 'partial';

@@ -52,3 +52,22 @@ Best regards,
 The BookingCrown Team`
     }
 }
+
+exports.generateNewPasswordText = (userName, newPassword) => {
+    return `
+Dear ${userName},
+
+We have received a request to reset your password. Your new password is:
+
+${newPassword}
+
+Please use this password to log in to your account.
+
+If you encounter any issues or have any questions, please do not hesitate to contact our support team at +91 99988 83603.
+
+Thank you for choosing Booking Crown!
+
+Best regards,
+The Booking Crown Team
+    `;
+};

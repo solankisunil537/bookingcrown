@@ -230,9 +230,9 @@ function DailyForm({ isEditing, userId }) {
 
                 </Row>
                 <Button
-                    type="submit"
+                    type="primary"
                     htmlType="submit"
-                    className='h-10 px-6 bg-themeColor border-themeColor hover:!bg-[#0dcaba] hover:!text-white hover:!border-[#0dcaba] inline-flex items-center justify-center font-medium rounded-md text-white mt-5'
+                    className='h-10 mt-5'
                 >
                     Save
                 </Button>

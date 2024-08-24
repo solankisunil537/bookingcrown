@@ -48,3 +48,16 @@ export const changePassword = async (data) => {
         return error.response.data.message
     }
 }
+
+export const forgetPassword = async (email) => {
+    try {
+        const response = await axios.post(baseUrl + "/forget-password", { email: email })
+        if (response.data) {
+            Notification.success(response.data.message)
+        }
+        return response.data
+    } catch (error) {
+        Notification.error(error.response.data.message)
+        return error.response.data.message
+    }
+}

@@ -1,5 +1,8 @@
 import Notification from "../utilities/Notification"
 import axiosInstance from "../services/axiosInstance/AxiosInstance"
+import axios from "axios"
+
+const baseUrl = process.env.REACT_APP_BACKEND_URL + "/api"
 
 export const CreateBooking = async (bookingData) => {
     try {
@@ -16,7 +19,7 @@ export const CreateBooking = async (bookingData) => {
 
 export const getBookingById = async (id) => {
     try {
-        const response = await axiosInstance.get("/getSingleBooking/" + id)
+        const response = await axios.get(baseUrl + "/getSingleBooking/" + id)
         return response.data.bookings
     } catch (error) {
         return error

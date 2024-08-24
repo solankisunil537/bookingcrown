@@ -20,6 +20,7 @@ import ProtectedAdminRoute from './services/protectedRoute/ProtectedAdminRoute';
 import HourlyBookingDetail from './user/components/Hourly/HourlyBookingDetail';
 import DailyBookingDetail from './user/components/Daily/DailyBookingDetail';
 import CustomerDetail from './user/pages/CustomerDetail/CustomerDetail';
+import ForgetPassword from './pages/ForgetPassword/ForgetPassword';
 
 function App() {
   return (
@@ -30,10 +31,11 @@ function App() {
         <Route path="/signup" element={<Signup />} />
         <Route path="/signup-confirmation" element={<ThankYou />} />
         <Route path="/change-password" element={<ChangePassword />} />
-        <Route path="/*" element={<NotFound />} />
+        <Route path="/forget-password" element={<ForgetPassword />} />
         <Route path="/customer/booking-details/:id" element={<CustomerDetail />} />
-        <Route path="/access-denied" element={<AccessDenied />} />
-        {/* <Route path="/access-denied" element={<ProtectedAccessDenied element={AccessDenied} />} /> */}
+        {/* <Route path="/access-denied" element={<AccessDenied />} /> */}
+        <Route path="/*" element={<NotFound />} />
+        <Route path="/access-denied" element={<ProtectedAccessDenied element={AccessDenied} />} />
 
         {/* ------------------ protected routes ------------------ */}
         <Route path="/user/dashboard" element={<ProtectedRoute element={UserDashboard} requiredRole="user" />} />
