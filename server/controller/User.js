@@ -92,10 +92,11 @@ exports.loginUser = async (req, res) => {
             return res.status(400).json({ message: 'Invalid email or password. Please try again later', success: false });
         }
 
+        let planExpired = false;
         if (user.role === "user") {
             const plan = await Plan.findOne({ userId: user._id }).sort({ createdAt: -1 });
             if (!plan || dayjs(plan.endDate).isBefore(dayjs().startOf('day'))) {
-                return res.status(403).json({ message: 'Access Denied.', success: false });
+                planExpired = true;
             }
         }
 
@@ -108,13 +109,25 @@ exports.loginUser = async (req, res) => {
 
         jwt.sign(payload, JWT_SECRET, (err, token) => {
             if (err) throw err;
-            res.json({ token, success: true, message: "Login successfull", role: user.role });
+
+            if (planExpired) {
+                return res.status(200).json({
+                    token,
+                    success: true,
+                    message: 'Access Denied. Your plan has expired or you do not have any active plan.',
+                    role: user.role,
+                    access: false
+                });
+            }
+
+            res.json({ token, success: true, message: "Login successful", role: user.role, access: true });
         });
+
     } catch (err) {
         console.error(err.message);
         res.status(500).send('Server error');
     }
-}
+};
 
 exports.changePassword = async (req, res) => {
     const { currentPassword, newPassword, confirmPassword } = req.body;
@@ -216,7 +229,6 @@ exports.getUserData = async (req, res) => {
         const data = await User.findById(userId)
         if (!data) return res.status(304).json({ message: 'No User found' });
         const userPlan = await Plan.findOne({ userId: userId });
-        // if (!userPlan) return res.status(304).json({ message: 'No Plan found' });
 
         res.status(200).json({
             message: 'User data retrieved successfully',
@@ -281,5 +293,31 @@ exports.updateUserByAdmin = async (req, res) => {
     } catch (error) {
         console.error(error.message);
         res.status(500).send('Server error');
+    }
+}
+
+exports.checkUserAccess = async (req, res) => {
+    try {
+        const userId = req.user.id;
+        const user = await User.findById(userId);
+
+        if (!user) {
+            return res.status(404).json({ message: 'User not found' });
+        }
+        const plan = await Plan.findOne({ userId: user._id }).sort({ createdAt: -1 }).limit(1);
+        const planEndDate = plan.endDate;
+
+        const currentDate = dayjs().startOf('day');
+        const planEnd = planEndDate ? dayjs(planEndDate).startOf('day') : null;
+
+        const hasActivePlan = planEnd ? planEnd.isAfter(currentDate) : false;
+
+        if (!hasActivePlan) {
+            return res.status(403).json({ message: 'Access denied' });
+        }
+        res.status(200).json({ message: 'Access granted' });
+    } catch (err) {
+        console.error(err);
+        res.status(500).json({ message: 'Failed to authenticate token' });
     }
 }

@@ -13,11 +13,12 @@ function Login() {
         setLoading(true)
         try {
             const data = await login(values.email, values.password)
-            if (data === "Access Denied.") {
+            localStorage.setItem("token", data.token)
+            localStorage.setItem("role", data.role)
+
+            if (!data.access) {
                 navigate("/access-denied")
-            } else if (data.success) {
-                localStorage.setItem("token", data.token)
-                localStorage.setItem("role", data.role)
+            } else {
                 form.resetFields()
                 if (data.role === "user") {
                     navigate("/user/dashboard")

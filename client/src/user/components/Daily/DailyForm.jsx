@@ -85,6 +85,7 @@ function DailyForm({ isEditing, userId }) {
         } else {
             await CreateBooking(formData)
         }
+
         await dispatch(fetchAllBookings())
         navigate("/user/booking-list")
     }
@@ -102,6 +103,7 @@ function DailyForm({ isEditing, userId }) {
                         <Item
                             name="customerName"
                             label="Customer name"
+                            labelCol={"right"}
                             rules={[{ required: true, message: 'Please input your name!' }]}
                         >
                             <Input
@@ -140,6 +142,7 @@ function DailyForm({ isEditing, userId }) {
                             <Select
                                 placeholder="Select Farm/Hotel"
                                 className='h-10'
+                                showSearch={false}
                                 options={
                                     userData.itemList?.map((item) => ({
                                         value: item,
@@ -159,6 +162,7 @@ function DailyForm({ isEditing, userId }) {
                             <DatePicker
                                 className="h-10 w-full"
                                 format="DD-MM-YYYY"
+                                inputReadOnly={true}
                                 value={(date) => date ? date.formate('DD-MM-YYYY') : null}
                                 disabledDate={currentDate => currentDate && currentDate.isBefore(dayjs().startOf('day'))}
                             />
@@ -174,6 +178,7 @@ function DailyForm({ isEditing, userId }) {
                             <Select
                                 placeholder="Select Session"
                                 className='h-10'
+                                showSearch={false}
                                 options={[
                                     { value: 'Morning Session', label: 'Morning Session' },
                                     { value: 'Afternoon Session', label: 'Afternoon Session' },
@@ -232,7 +237,7 @@ function DailyForm({ isEditing, userId }) {
                 <Button
                     type="primary"
                     htmlType="submit"
-                    className='h-10 mt-5'
+                    className='h-10'
                 >
                     Save
                 </Button>

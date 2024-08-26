@@ -6,6 +6,17 @@ exports.createBookings = async (req, res) => {
         const userId = req.user.id
         const { customerName, mobilenu, date, time, turfOrTable, totalHours, amount, advance, pending, bookingType, session, item } = req.body;
 
+        const existingBooking = await Bookings.findOne({
+            item: item,
+            date: date,
+            "time.start": { $lt: time.end },
+            "time.end": { $gt: time.start }
+        });
+
+        if (existingBooking) {
+            return res.status(400).json({ message: "Booking already exists for the given time and item", success: false });
+        }
+
         const booking = new Bookings({
             userId,
             customerName,

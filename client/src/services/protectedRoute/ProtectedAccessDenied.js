@@ -1,56 +1,53 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect } from 'react';
 import { Navigate } from 'react-router-dom';
-import { useDispatch, useSelector } from 'react-redux';
-import { fetchUserData } from '../../features/user/UserSlice';
-import useToken from 'antd/es/theme/useToken';
+import { getToken } from '../authService/AuthService';
 import Loader from '../../common/Loader';
-import dayjs from 'dayjs';
+import { useUserAccess } from '../userAccessContext/UserAccessContext';
+import axiosInstance from '../axiosInstance/AxiosInstance';
 
-const ProtectedAccessDenied = ({ element: Component, ...rest }) => {
-    const [isLoading, setIsLoading] = useState(true);
-    const [canAccess, setCanAccess] = useState(false);
-    const dispatch = useDispatch();
-    const token = useToken()
-    const { user, status } = useSelector((state) => state.user);
+const baseUrl = process.env.REACT_APP_BACKEND_URL + "/api"
 
-    useEffect(() => {
-        // if (!token) {
-        //     setIsLoading(false);
-        //     setCanAccess(false);
-        //     return
-        // }
-
-        if (status === 'idle') {
-            dispatch(fetchUserData());
-        }
-    }, [dispatch, status]);
+const ProtectedRoute = ({ element: Component, requiredRole, ...rest }) => {
+    const token = getToken();
+    const { userAccess, setUserAccess } = useUserAccess();
 
     useEffect(() => {
-        if (status !== 'idle' && user?.data?.plan) {
-            const currentDate = dayjs().startOf('day');
-            const planEndDate = dayjs(user.plan.endDate).startOf('day');
-
-            if (planEndDate.isAfter(currentDate)) {
-                setCanAccess(false);
-            } else {
-                setCanAccess(true);
+        const checkAccess = async () => {
+            if (!token) {
+                setUserAccess({ hasAccess: false, isLoading: false });
+                return;
             }
-            setIsLoading(false);
-        } else if (Object.values(user).length === 0) {
-            setCanAccess(true)
-            setIsLoading(false)
-        }
-    }, [status, user]);
 
-    if (isLoading) {
-        return <Loader />
+            if (userAccess.hasAccess === null) {
+                try {
+                    const response = await axiosInstance.get(baseUrl + '/check-access');
+
+                    if (response.status === 200 && response.data.message === 'Access granted') {
+                        setUserAccess({ hasAccess: true, isLoading: false });
+                    }
+                } catch (error) {
+                    console.error(error);
+                    setUserAccess({ hasAccess: false, isLoading: false });
+                }
+            }
+        };
+
+        checkAccess();
+    }, [token, userAccess, setUserAccess]);
+
+    if (userAccess.isLoading) {
+        return <Loader />;
     }
 
-    if (!canAccess) {
+    if (!token) {
+        return <Navigate to="/login" />;
+    }
+
+    if (!userAccess.hasAccess) {
         return <Component {...rest} />;
     }
 
     return <Navigate to="/user/dashboard" />;
 };
 
-export default ProtectedAccessDenied;
+export default ProtectedRoute;

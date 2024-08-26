@@ -1,53 +1,41 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect } from 'react';
 import { Navigate } from 'react-router-dom';
-import { getToken, getUserRole } from '../authService/AuthService';
-import { useDispatch, useSelector } from 'react-redux';
-import { fetchUserData } from '../../features/user/UserSlice';
+import { getToken } from '../authService/AuthService';
 import Loader from '../../common/Loader';
-import dayjs from 'dayjs';
+import { useUserAccess } from '../userAccessContext/UserAccessContext';
+import axiosInstance from '../axiosInstance/AxiosInstance';
+
+const baseUrl = process.env.REACT_APP_BACKEND_URL + "/api"
 
 const ProtectedRoute = ({ element: Component, requiredRole, ...rest }) => {
-    const [isLoading, setIsLoading] = useState(true);
-    const [hasAccess, setHasAccess] = useState(true);
-    const dispatch = useDispatch();
-    const { user, status } = useSelector((state) => state.user);
     const token = getToken();
-    const userRole = getUserRole();
+    const { userAccess, setUserAccess } = useUserAccess();
 
     useEffect(() => {
-        if (status === "idle") {
-            dispatch(fetchUserData());
-        }
-    }, [dispatch, status]);
-
-    useEffect(() => {
-        const checkAccess = () => {
+        const checkAccess = async () => {
             if (!token) {
-                setIsLoading(false);
-                setHasAccess(false);
+                setUserAccess({ hasAccess: false, isLoading: false });
                 return;
             }
 
-            if (status === 'succeeded' && user?.data?.plan && user?.data?.plan?.endDate) {
-                const currentDate = dayjs().startOf('day');
-                const planEndDate = dayjs(user.plan?.endDate).startOf('day');
+            if (userAccess.hasAccess === null) {
+                try {
+                    const response = await axiosInstance.get(baseUrl + '/check-access');
 
-                if (planEndDate.isBefore(currentDate)) {
-                    setHasAccess(false);
-                } else {
-                    setHasAccess(true);
+                    if (response.status === 200 && response.data.message === 'Access granted') {
+                        setUserAccess({ hasAccess: true, isLoading: false });
+                    }
+                } catch (error) {
+                    console.error(error);
+                    setUserAccess({ hasAccess: false, isLoading: false });
                 }
-            } else {
-                setHasAccess(true);
             }
-
-            setIsLoading(false);
         };
 
         checkAccess();
-    }, [token, user, status]);
+    }, [token, userAccess, setUserAccess]);
 
-    if (isLoading) {
+    if (userAccess.isLoading) {
         return <Loader />;
     }
 
@@ -55,11 +43,7 @@ const ProtectedRoute = ({ element: Component, requiredRole, ...rest }) => {
         return <Navigate to="/login" />;
     }
 
-    if (requiredRole && userRole !== requiredRole) {
-        return <Navigate to="/" />;
-    }
-
-    if (!hasAccess) {
+    if (!userAccess.hasAccess) {
         return <Navigate to="/access-denied" />;
     }
 

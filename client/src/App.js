@@ -33,8 +33,8 @@ function App() {
         <Route path="/change-password" element={<ChangePassword />} />
         <Route path="/forget-password" element={<ForgetPassword />} />
         <Route path="/customer/booking-details/:id" element={<CustomerDetail />} />
-        {/* <Route path="/access-denied" element={<AccessDenied />} /> */}
         <Route path="/*" element={<NotFound />} />
+
         <Route path="/access-denied" element={<ProtectedAccessDenied element={AccessDenied} />} />
 
         {/* ------------------ protected routes ------------------ */}

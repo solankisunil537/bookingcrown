@@ -32,8 +32,6 @@ app.use('/api', BookingRouter);
 app.use('/api', PlanRouter);
 
 io.on('connection', (socket) => {
-    console.log('A user connected');
-
     socket.on('joinRoom', (room) => {
         socket.join(room);
         console.log(`User joined room: ${room}`);

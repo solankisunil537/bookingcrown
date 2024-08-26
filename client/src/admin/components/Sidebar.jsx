@@ -44,8 +44,8 @@ export default function Sidebar() {
 
     const handleLogOut = async () => {
         try {
-            await dispatch(resetUserData());
-            await dispatch(resetBookingData());
+            dispatch(resetUserData());
+            dispatch(resetBookingData());
             localStorage.clear();
 
             navigate("/");

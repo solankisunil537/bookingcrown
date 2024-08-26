@@ -60,7 +60,7 @@ body {
 }
 
 :where(.css-dev-only-do-not-override-1gvtekd).ant-form-item .ant-form-item-label>label.ant-form-item-required:not(.ant-form-item-required-mark-optional)::before {
-  display: none;
+  display: none !important;
 }
 
 .stepper-main>div:last-child .after-step {

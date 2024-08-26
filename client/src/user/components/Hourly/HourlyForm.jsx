@@ -80,6 +80,7 @@ function HourlyForm({ isEditing, userId }) {
     }
 
     const onFinish = async (values) => {
+        let response = null
         const formData = {
             customerName: values.customerName,
             mobilenu: values.mobileNumber,
@@ -95,12 +96,12 @@ function HourlyForm({ isEditing, userId }) {
             pending: values.pendingAmount
         }
         if (isEditing) {
-            await UpdateBooking(formData, userId)
+            response = await UpdateBooking(formData, userId)
         } else {
-            await CreateBooking(formData)
+            response = await CreateBooking(formData)
         }
         await dispatch(fetchAllBookings())
-        navigate("/user/booking-list")
+        if (response.success) navigate("/user/booking-list")
     }
 
     return (
@@ -154,6 +155,7 @@ function HourlyForm({ isEditing, userId }) {
                             <Select
                                 placeholder="Select Table/Turf"
                                 className='h-10'
+                                showSearch={false}
                                 options={
                                     userData.itemList?.map((item) => ({
                                         value: item,
@@ -173,6 +175,7 @@ function HourlyForm({ isEditing, userId }) {
                             <DatePicker
                                 className="h-10 w-full"
                                 format="DD-MM-YYYY"
+                                inputReadOnly={true}
                                 disabledDate={currentDate => currentDate && currentDate.isBefore(moment().startOf('day'))}
                             />
                         </Item>
@@ -187,6 +190,8 @@ function HourlyForm({ isEditing, userId }) {
                             <TimePicker
                                 format="hh:mm A"
                                 className='h-10 w-full'
+                                inputReadOnly={true}
+                                needConfirm={false}
                             />
                         </Item>
                     </Col>
@@ -203,6 +208,8 @@ function HourlyForm({ isEditing, userId }) {
                                 format="hh:mm A"
                                 className='h-10 w-full'
                                 onChange={handleRangeChange}
+                                inputReadOnly={true}
+                                needConfirm={false}
                             />
                         </Item>
                     </Col>
@@ -270,7 +277,7 @@ function HourlyForm({ isEditing, userId }) {
                 <Button
                     type="primary"
                     htmlType="submit"
-                    className='h-10 mt-5'
+                    className='h-10'
                 >
                     Save
                 </Button>
