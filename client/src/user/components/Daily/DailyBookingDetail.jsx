@@ -1,16 +1,21 @@
 import React, { useEffect, useState } from 'react';
-import { useParams } from 'react-router-dom';
-import { Card, Col, Row, Typography, Skeleton, Button } from 'antd';
-import { getBookingById } from '../../../api/Bookings';
+import { useNavigate, useParams } from 'react-router-dom';
+import { Card, Col, Row, Typography, Skeleton, Button, Modal } from 'antd';
+import { DeleteBooking, getBookingById } from '../../../api/Bookings';
 import Sidebar from '../../components/Sidebar';
 import CopyToClipboard from 'react-copy-to-clipboard';
 import Notification from '../../../utilities/Notification';
+import { fetchAllBookings } from '../../../features/bookings/BookingSlice';
+import { useDispatch } from 'react-redux';
 
 const { Text } = Typography;
+const { confirm } = Modal
 
 const DailyBookingDetail = () => {
     const [booking, setBooking] = useState(null);
     const [loading, setLoading] = useState(true);
+    const dispatch = useDispatch()
+    const navigate = useNavigate()
     const params = useParams();
 
     const fetchBooking = async () => {
@@ -22,6 +27,22 @@ const DailyBookingDetail = () => {
         } finally {
             setLoading(false);
         }
+    };
+
+    const handleDelete = (id) => {
+        confirm({
+            title: 'Are you sure you want to delete this booking?',
+            okText: 'Yes',
+            okType: 'danger',
+            cancelText: 'No',
+            async onOk() {
+                const data = await DeleteBooking(id);
+                if (data.success) {
+                    dispatch(fetchAllBookings());
+                    navigate("/user/booking-list")
+                }
+            }
+        });
     };
 
     useEffect(() => {
@@ -102,6 +123,10 @@ const DailyBookingDetail = () => {
                                 <CopyToClipboard onCopy={() => Notification.success("Link copied to clipboard!")} text={`${process.env.REACT_APP_BASE_URL}/customer/booking-details/${booking?._id}`}>
                                     <Button type='primary' >Click here to copy link</Button>
                                 </CopyToClipboard>
+                            </Card>
+
+                            <Card title="Delete This Booking Details" className='mt-3'>
+                                <Button type='primary' danger onClick={() => handleDelete(params.id)}>Delete</Button>
                             </Card>
                         </Skeleton>
                     </div>

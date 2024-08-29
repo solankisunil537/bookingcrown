@@ -308,7 +308,8 @@ exports.checkUserAccess = async (req, res) => {
         const planEndDate = plan.endDate;
 
         const currentDate = dayjs().startOf('day');
-        const planEnd = planEndDate ? dayjs(planEndDate).startOf('day') : null;
+        const planEnd = planEndDate ? dayjs(planEndDate).endOf('day') : null;
+
 
         const hasActivePlan = planEnd ? planEnd.isAfter(currentDate) : false;
 

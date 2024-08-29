@@ -8,6 +8,7 @@ import DailyForm from '../../components/Daily/DailyForm';
 function AddBooking() {
     const dispatch = useDispatch()
     const { user, status } = useSelector((state) => state.user);
+
     useEffect(() => {
         if (status === "idle") {
             dispatch(fetchUserData())
@@ -24,7 +25,7 @@ function AddBooking() {
                         </div>
                     </div>
                     <div className='p-6'>
-                        {user.data?.bookingType === "hourly" ? (<HourlyForm />) : (<DailyForm />)}
+                        {user.data?.businessType === "Box Cricket" ? (<HourlyForm />) : (<DailyForm />)}
                     </div>
                 </div>
             </main>

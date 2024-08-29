@@ -7,6 +7,8 @@ import { CreateBooking, getBookingById, UpdateBooking } from '../../../api/Booki
 import { fetchAllBookings } from '../../../features/bookings/BookingSlice';
 import { useNavigate } from 'react-router-dom';
 import dayjs from 'dayjs';
+import "../../../App.css"
+
 const { Item } = Form;
 
 function HourlyForm({ isEditing, userId }) {
@@ -26,7 +28,7 @@ function HourlyForm({ isEditing, userId }) {
             }
 
             const hours = duration.asHours();
-            form.setFieldsValue({ totalHours: hours });
+            form.setFieldsValue({ totalHours: hours.toFixed(2) });
         }
     };
 
@@ -85,7 +87,7 @@ function HourlyForm({ isEditing, userId }) {
             customerName: values.customerName,
             mobilenu: values.mobileNumber,
             item: values.item,
-            date: values.date,
+            date: dayjs(values.date).format('YYYY-MM-DD'),
             time: {
                 start: values.startTime.format('hh:mm A'),
                 end: values.endTime.format('hh:mm A'),
@@ -122,6 +124,7 @@ function HourlyForm({ isEditing, userId }) {
                             <Input
                                 placeholder="Name"
                                 className="h-10 border-gray-300"
+                                suffix={false}
                             />
                         </Item>
                     </Col>
@@ -141,7 +144,7 @@ function HourlyForm({ isEditing, userId }) {
                             <Input
                                 type="number"
                                 placeholder="Mobile Number"
-                                className="h-10 border-gray-300 focus:border-themeColor hover:border-themeColor rounded outline-none bg-transparent"
+                                className="h-10 w-full"
                             />
                         </Item>
                     </Col>

@@ -6,6 +6,7 @@ import { useDispatch, useSelector } from 'react-redux';
 import { fetchAllUsers } from '../../../features/user/UserSlice';
 import moment from 'moment';
 import io from 'socket.io-client';
+import dayjs from 'dayjs';
 
 const socket = io(process.env.REACT_APP_BACKEND_URL);
 
@@ -14,9 +15,9 @@ function Dashboard() {
     const { allUsers, status } = useSelector((state) => state.user);
     const dispatch = useDispatch();
 
-    const now = moment();
+    const now = dayjs();
     const filteredUsers = allUsers
-        .filter(user => !user.planData || (user.planData && moment(user.planData.endDate).isBefore(now)))
+        .filter(user => !user.planData || (user.planData && dayjs(user.planData.endDate).endOf('day').isBefore(now)))
 
     useEffect(() => {
         if (status === 'idle') {

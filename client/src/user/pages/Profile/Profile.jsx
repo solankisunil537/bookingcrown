@@ -280,7 +280,7 @@ function Profile() {
                                         <Col xs={12} sm={12} lg={8}>
                                             <Item
                                                 name="tableTurfList"
-                                                label="Add Number Of Table"
+                                                label="Add Number Of Turf"
                                                 rules={[{ required: true, message: 'Please enter a number of tables!' }]}
                                             >
                                                 <Input

@@ -3,6 +3,7 @@ import { login } from "../../api/Auth";
 import { useState } from "react";
 import Footer from "../../common/Footer";
 import { Form, Input, Button, Spin } from 'antd';
+import "../../App.css"
 
 function Login() {
     const [form] = Form.useForm();

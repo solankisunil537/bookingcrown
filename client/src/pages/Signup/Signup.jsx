@@ -5,6 +5,7 @@ import { Form, Input, Button, Select, Spin, Col, Row } from 'antd';
 import { signup } from '../../api/Auth'
 import Footer from '../../common/Footer'
 import io from 'socket.io-client';
+import "../../App.css"
 
 const socket = io(process.env.REACT_APP_BACKEND_URL);
 

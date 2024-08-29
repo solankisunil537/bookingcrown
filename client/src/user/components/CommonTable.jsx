@@ -1,4 +1,4 @@
-import { Button, DatePicker, Form, Input, Modal, Popover, Select, Spin, Table, Tag } from 'antd';
+import { Button, Col, DatePicker, Form, Input, Modal, Popover, Row, Select, Spin, Table, Tag } from 'antd';
 import React, { useEffect, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import moment from 'moment';
@@ -9,10 +9,10 @@ import { fetchAllBookings } from '../../features/bookings/BookingSlice';
 import { fetchUserData } from '../../features/user/UserSlice';
 import { DeleteBooking } from '../../api/Bookings';
 import UpdatePayment from '../model/UpdatePayment';
+import "../../App.css"
 
 const { confirm } = Modal;
 const { Option } = Select;
-const { Item } = Form;
 
 const commonColumns = [
     {
@@ -29,20 +29,20 @@ const commonColumns = [
         align: 'center',
         responsive: ['xs', 'sm'],
     },
+];
+
+const hourlyColumns = [
     {
         title: 'Booking Date',
         dataIndex: 'date',
         key: 'date',
         render: (text, record) => {
-            if (record.key === 'total') return null;
+            if (record.key === 'total') return "Total Hour";
             return (new Date(text).toLocaleDateString("en-GB"))
         },
         align: 'center',
         responsive: ['xs', 'sm'],
-    }
-];
-
-const hourlyColumns = [
+    },
     {
         title: 'Table/Turf',
         dataIndex: 'item',
@@ -65,15 +65,25 @@ const hourlyColumns = [
         responsive: ['xs', 'sm'],
     },
     {
-        title: 'Total Hours',
-        dataIndex: 'totalHours',
-        key: 'totalHours',
+        title: 'Hr',
+        dataIndex: 'Hr',
+        key: 'Hr',
         align: 'center',
         responsive: ['xs', 'sm'],
     },
 ];
 
 const dailyColumns = [
+    {
+        title: 'Booking Date',
+        dataIndex: 'date',
+        key: 'date',
+        render: (text, record) => {
+            if (record.key === 'total') return "Total Hour";
+        },
+        align: 'center',
+        responsive: ['xs', 'sm'],
+    },
     {
         title: 'Farm/Hotel',
         dataIndex: 'item',
@@ -90,7 +100,7 @@ const dailyColumns = [
     },
 ];
 
-const actionColumns = (handleEdit, handleDelete, navigateDetailPage, showModal) => [
+const actionColumns = (handleEdit, navigateDetailPage, showModal) => [
     {
         title: 'Payment',
         dataIndex: 'payment',
@@ -101,24 +111,9 @@ const actionColumns = (handleEdit, handleDelete, navigateDetailPage, showModal) 
             if (record.key === 'total') return null;
             return (
                 <div className='cursor-pointer'>
-                    <Tag color="magenta" onClick={() => showModal(record)} >{record.payment}</Tag>
+                    <Tag color={record.payment === "pending" ? "#f94144" : record.payment === "partial" ? "#ffbe0b" : "#38b000"} onClick={() => showModal(record)} >{record.payment}</Tag>
                 </div>
             )
-        }
-    },
-    {
-        title: 'View Details',
-        dataIndex: 'details',
-        key: 'details',
-        align: 'center',
-        responsive: ['xs', 'sm'],
-        render: (text, record) => {
-            if (record.key === 'total') return null;
-            return (
-                <div>
-                    <FaInfoCircle onClick={() => navigateDetailPage(record)} type="link" className='text-[20px] text-themeColor m-auto' />
-                </div>
-            );
         }
     },
     {
@@ -130,8 +125,8 @@ const actionColumns = (handleEdit, handleDelete, navigateDetailPage, showModal) 
             if (record.key === 'total') return null;
             return (
                 <div className='flex'>
-                    <FaEdit onClick={() => handleEdit(record.key)} type="link" className="mr-2 text-[18px] text-themeColor" />
-                    <MdDelete onClick={() => handleDelete(record.key)} type="link" danger className='text-[18px] text-red-600' />
+                    <FaInfoCircle onClick={() => navigateDetailPage(record)} type="link" className='text-[20px] text-themeColor m-auto' />
+                    <FaEdit onClick={() => handleEdit(record.key)} type="link" className="ml-4 text-[20px] text-themeColor" />
                 </div>
             );
         },
@@ -202,7 +197,7 @@ function CommonTable({ filter }) {
             startTime: booking.time?.start,
             endTime: booking.time?.end,
             item: booking.item,
-            totalHours: booking.totalHours,
+            Hr: booking.totalHours,
             session: booking.session,
             payment: booking.payment,
             amount: booking.amount,
@@ -213,21 +208,6 @@ function CommonTable({ filter }) {
 
     const handleEdit = (id) => {
         navigate(`/user/edit-booking/${id}`);
-    };
-
-    const handleDelete = (id) => {
-        confirm({
-            title: 'Are you sure you want to delete this booking?',
-            okText: 'Yes',
-            okType: 'danger',
-            cancelText: 'No',
-            async onOk() {
-                const data = await DeleteBooking(id);
-                if (data.success) {
-                    dispatch(fetchAllBookings());
-                }
-            }
-        });
     };
 
     const navigateDetailPage = (record) => {
@@ -256,62 +236,71 @@ function CommonTable({ filter }) {
         dispatch(fetchAllBookings())
     };
 
-    const totalHoursPerPage = userState.user.data?.bookingType === 'hourly'
-        ? getCurrentPageData().reduce((sum, booking) => sum + (booking.totalHours || 0), 0)
+    const totalHoursPerPage = userState.user.data?.businessType === "Box Cricket"
+        ? getCurrentPageData().reduce((sum, booking) => sum + (booking.Hr || 0), 0)
         : null;
 
-    const totalRow = userState.user.data?.bookingType === 'hourly' && filteredData.length > 0
-        ? [{
-            key: 'total',
-            customerName: 'Total Hours',
-            totalHours: totalHoursPerPage,
-            mobilenu: '',
-            startTime: '',
-            endTime: '',
-            item: '',
-            session: '',
-        }]
-        : [];
+    const totalRow =
+        userState.user.data?.bookingType === 'hourly' && filteredData.length > 0
+            ? [
+                {
+                    key: 'total',
+                    customerName: '',
+                    mobilenu: '',
+                    date: '',
+                    Hr: totalHoursPerPage,
+                    startTime: '',
+                    endTime: '',
+                    item: '',
+                    session: '',
+                },
+            ]
+            : [];
 
-    const dataSourceWithTotalRow = [
-        ...filteredData,
-        ...totalRow
-    ];
+    const dataSourceWithTotalRow = [...filteredData, ...totalRow];
 
     const columns = [
+        ...(userState.user.data?.businessType === "Box Cricket" ? hourlyColumns : dailyColumns),
         ...commonColumns,
-        ...(userState.user.data?.bookingType === 'hourly' ? hourlyColumns : dailyColumns),
-        ...actionColumns(handleEdit, handleDelete, navigateDetailPage, showModal),
+        ...actionColumns(handleEdit, navigateDetailPage, showModal),
     ];
 
     return (
         <div>
-            <div className="mb-4 flex justify-end gap-2 md:gap-7">
-                <Input
-                    placeholder="Search by Name or Mobile Number"
-                    value={searchText}
-                    onChange={(e) => setSearchText(e.target.value)}
-                    className='w-full md:w-1/3 h-8 mb-2 md:mb-0'
-                />
-                <Select
-                    placeholder="Search by Month"
-                    value={selectedMonth}
-                    onChange={(value) => setSelectedMonth(value)}
-                    className='w-full md:w-1/3'
-                >
-                    <Option value={null}>All Months</Option>
-                    {months.map((month) => (
-                        <Option key={month} value={month}>
-                            {month}
-                        </Option>
-                    ))}
-                </Select>
-                <DatePicker
-                    placeholder='Search by date'
-                    format="DD-MM-YYYY"
-                    onChange={(date) => setSelectedDate(date ? date.format('DD-MM-YYYY') : null)}
-                    className='w-full md:w-1/3'
-                />
+            <div className="mb-4">
+                <Row gutter={14}>
+                    <Col xs={12} sm={12} md={8}>
+                        <Input
+                            placeholder="Search by Name or Mobile Number"
+                            value={searchText}
+                            onChange={(e) => setSearchText(e.target.value)}
+                            className="w-full h-8 mb-2 md:mb-0"
+                        />
+                    </Col>
+                    <Col xs={12} sm={12} md={8}>
+                        <Select
+                            placeholder="Search by Month"
+                            value={selectedMonth}
+                            onChange={(value) => setSelectedMonth(value)}
+                            className="w-full"
+                        >
+                            <Option value={null}>All Months</Option>
+                            {months.map((month) => (
+                                <Option key={month} value={month}>
+                                    {month}
+                                </Option>
+                            ))}
+                        </Select>
+                    </Col>
+                    <Col xs={12} sm={12} md={8}>
+                        <DatePicker
+                            placeholder="Search by date"
+                            format="DD-MM-YYYY"
+                            onChange={(date) => setSelectedDate(date ? date.format('DD-MM-YYYY') : null)}
+                            className="w-full"
+                        />
+                    </Col>
+                </Row>
             </div>
             <div>
                 <Table

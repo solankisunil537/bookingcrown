@@ -4,6 +4,7 @@ import { createPlanData } from '../../api/Plan';
 import { useDispatch } from 'react-redux';
 import { fetchAllUsers } from '../../features/user/UserSlice';
 import moment from 'moment';
+import dayjs from 'dayjs';
 
 const { Item } = Form;
 
@@ -32,8 +33,8 @@ const CreatePlan = ({ showModel, handleCancel, selectedId }) => {
         const planData = {
             userId: selectedId,
             planType: values.plan,
-            startDate: values.startDate,
-            endDate: values.endDate,
+            startDate: dayjs(values.startDate).format('YYYY-MM-DD'),
+            endDate: dayjs(values.endDate).format('YYYY-MM-DD'),
             amount: values.amount
         }
         const response = await createPlanData(planData, selectedId)
@@ -41,6 +42,7 @@ const CreatePlan = ({ showModel, handleCancel, selectedId }) => {
             await dispatch(fetchAllUsers());
             setLoading(false)
             handleCancel()
+            form.resetFields()
         }
     };
 
@@ -94,6 +96,7 @@ const CreatePlan = ({ showModel, handleCancel, selectedId }) => {
                         <DatePicker
                             placeholder='Start Date'
                             format="DD-MM-YYYY"
+                            inputReadOnly={true}
                             className='w-full h-10'
                             onChange={(e) => setStartDate(e)}
                             disabledDate={currentDate => currentDate && currentDate.isBefore(moment().startOf('day'))}
@@ -110,6 +113,7 @@ const CreatePlan = ({ showModel, handleCancel, selectedId }) => {
                         <DatePicker
                             placeholder='End Date'
                             className='w-full h-10'
+                            inputReadOnly={true}
                             format="DD-MM-YYYY"
                             disabledDate={(currentDate) => startDate && currentDate.isBefore(startDate, "day")}
                         />

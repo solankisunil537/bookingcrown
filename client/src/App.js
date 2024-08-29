@@ -10,7 +10,6 @@ import EditBooking from './user/pages/EditBooking/EditBooking';
 import ChangePassword from './pages/ChangePassword/ChangePassword';
 import AdminDashboard from './admin/pages/Dashboard/Dashboard';
 import ProtectedRoute from './services/protectedRoute/ProtectedRoute';
-import BookingDetail from './user/pages/BookingDetail/BookingDetail';
 import Profile from './user/pages/Profile/Profile';
 import ThankYou from './user/pages/ThankYou/ThankYou';
 import AccessDenied from './user/pages/AccessDenied/AccessDenied';
@@ -41,7 +40,6 @@ function App() {
         <Route path="/user/dashboard" element={<ProtectedRoute element={UserDashboard} requiredRole="user" />} />
         <Route path="/user/add-booking" element={<ProtectedRoute element={AddBooking} requiredRole="user" />} />
         <Route path="/user/booking-list" element={<ProtectedRoute element={BookingList} requiredRole="user" />} />
-        <Route path="/user/booking-details/:id" element={<ProtectedRoute element={BookingDetail} requiredRole="user" />} />
         <Route path="/user/edit-booking/:id" element={<ProtectedRoute element={EditBooking} requiredRole="user" />} />
         <Route path="/user/profile" element={<ProtectedRoute element={Profile} requiredRole="user" />} />
         <Route path="/user/hourly-booking-details/:id" element={<ProtectedRoute element={HourlyBookingDetail} requiredRole="user" />} />

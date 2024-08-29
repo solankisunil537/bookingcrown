@@ -193,16 +193,27 @@ export default function Sidebar() {
                             <span className="sr-only">Open sidebar</span>
                             <FaBars aria-hidden="true" className="h-6 w-6" />
                         </button>
+                        <div className="flex items-center lg:hidden">
+                            <img
+                                src={require("../../assets/Logo.png")}
+                                alt="logo"
+                                className='h-10 w-10 sm:h-12 sm:w-12 md:h-16 md:w-16'
+                            />
+                            <h1 className='ml-2 sm:ml-3 cursor-pointer font-bold text-themeColor text-base sm:text-lg md:text-xl'>
+                                Booking Crown
+                            </h1>
+                        </div>
 
                         <div className="flex gap-x-4 self-stretch lg:gap-x-6">
                             <div className="flex items-center gap-x-4 lg:gap-x-6">
+
                                 <div aria-hidden="true" className="hidden lg:block lg:h-6 lg:w-px lg:bg-gray-900/10" />
 
                                 <Menu as="div" className="relative">
-                                    <MenuButton className="-m-1.5 flex items-center p-1.5">
+                                    <MenuButton className="-m-1.5 flex items-center">
                                         <span className="sr-only">Open user menu</span>
-                                        <span aria-hidden="true" className="mr-4 text-sm font-semibold leading-6 text-gray-900">
-                                            {user.data?.name} - {user.data?.businessName}
+                                        <span aria-hidden="true" className="mr-2 text-sm font-semibold leading-6 text-gray-900">
+                                            {user.data?.businessName}
                                         </span>
                                         <img
                                             alt="user"

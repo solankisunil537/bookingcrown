@@ -162,11 +162,12 @@ function UsersTable({ activeKey }) {
         }
     };
 
-    const now = moment();
+    const now = dayjs().startOf("day");
     const filteredData = allUsers
         .filter((user) => {
             const hasPlan = user.planData && user.planData.planType;
-            const hasExpiredPlan = hasPlan && moment(user.planData.endDate).isBefore(now);
+
+            const hasExpiredPlan = hasPlan && dayjs(user.planData.endDate).endOf('day').isBefore(now);
 
             const matchesSearchText = user.name.toLowerCase().includes(searchText.toLowerCase()) ||
                 user.mobilenu.toString().includes(searchText.toString()) ||
@@ -175,7 +176,7 @@ function UsersTable({ activeKey }) {
 
             const selectedDateMoment = selectedDate ? dayjs(selectedDate).startOf('day') : null;
             const startDateMoment = user.planData?.startDate ? dayjs(user.planData.startDate).startOf('day') : null;
-            const endDateMoment = user.planData?.endDate ? dayjs(user.planData.endDate).startOf('day') : null;
+            const endDateMoment = user.planData?.endDate ? dayjs(user.planData.endDate).endOf('day') : null;
 
             const matchesDate = selectedDateMoment ?
                 (startDateMoment && selectedDateMoment.isSame(startDateMoment, 'day')) ||
@@ -183,7 +184,7 @@ function UsersTable({ activeKey }) {
                 true;
 
             if (activeKey === "1") {
-                return hasPlan && matchesSearchText && matchesDate;
+                return hasPlan && matchesSearchText && matchesDate && !hasExpiredPlan;
             } else if (activeKey === "2") {
                 return (hasExpiredPlan || !hasPlan) && matchesSearchText && matchesDate;
             }

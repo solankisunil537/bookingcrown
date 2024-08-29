@@ -4,7 +4,7 @@ const User = require("../model/User");
 exports.createBookings = async (req, res) => {
     try {
         const userId = req.user.id
-        const { customerName, mobilenu, date, time, turfOrTable, totalHours, amount, advance, pending, bookingType, session, item } = req.body;
+        const { customerName, mobilenu, date, time, totalHours, amount, advance, pending, bookingType, session, item } = req.body;
 
         const existingBooking = await Bookings.findOne({
             item: item,
@@ -14,7 +14,7 @@ exports.createBookings = async (req, res) => {
         });
 
         if (existingBooking) {
-            return res.status(400).json({ message: "Booking already exists for the given time and item", success: false });
+            return res.status(400).json({ message: "Booking already exists for the given time and date", success: false });
         }
 
         const booking = new Bookings({
@@ -24,7 +24,6 @@ exports.createBookings = async (req, res) => {
             date,
             time,
             totalHours,
-            turfOrTable,
             amount,
             advance,
             pending,
@@ -47,7 +46,6 @@ exports.updateBookingDetails = async (req, res) => {
             phone,
             date,
             time,
-            turfOrTable,
             totalHours,
             amount,
             advance,
@@ -67,7 +65,6 @@ exports.updateBookingDetails = async (req, res) => {
         if (date !== undefined) booking.date = date;
         if (time !== undefined) booking.time = time;
         if (totalHours !== undefined) booking.totalHours = totalHours;
-        if (turfOrTable !== undefined) booking.turfOrTable = turfOrTable;
         if (amount !== undefined) booking.amount = amount;
         if (advance !== undefined) booking.advance = advance;
         if (pending !== undefined) booking.pending = pending;

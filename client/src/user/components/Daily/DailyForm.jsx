@@ -7,6 +7,8 @@ import { CreateBooking, getBookingById, UpdateBooking } from '../../../api/Booki
 import { fetchAllBookings } from '../../../features/bookings/BookingSlice';
 import { useNavigate } from 'react-router-dom';
 import dayjs from 'dayjs';
+import "../../../App.css"
+
 const { Item } = Form;
 
 function DailyForm({ isEditing, userId }) {
@@ -50,7 +52,7 @@ function DailyForm({ isEditing, userId }) {
     const getBookingsData = async () => {
         try {
             const data = await getBookingById(userId)
-            const bookingDate = dayjs(data.date);
+            const bookingDate = dayjs(data.date).format("YYYY-MM-DD");
             if (data) {
                 form.setFieldsValue({
                     customerName: data.customerName,
@@ -74,7 +76,7 @@ function DailyForm({ isEditing, userId }) {
             customerName: values.customerName,
             mobilenu: values.mobileNumber,
             item: values.item,
-            date: values.date,
+            date: dayjs(values.date).format('YYYY-MM-DD'),
             session: values.session,
             amount: values.totalAmount,
             advance: values.advanceAmount || 0,
