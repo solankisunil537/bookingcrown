@@ -28,7 +28,7 @@ function HourlyForm({ isEditing, userId }) {
             }
 
             const hours = duration.asHours();
-            form.setFieldsValue({ totalHours: hours.toFixed(2) });
+            form.setFieldsValue({ totalHours: Math.round(hours) });
         }
     };
 

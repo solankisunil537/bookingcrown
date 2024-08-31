@@ -1,17 +1,17 @@
-import { Button, Col, DatePicker, Form, Input, Modal, Popover, Row, Select, Spin, Table, Tag } from 'antd';
+import { Col, DatePicker, Input, Row, Select, Spin, Table, Tag } from 'antd';
 import React, { useEffect, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import moment from 'moment';
 import { useNavigate } from 'react-router-dom';
 import { FaEdit, FaInfoCircle } from "react-icons/fa";
-import { MdDelete } from 'react-icons/md';
 import { fetchAllBookings } from '../../features/bookings/BookingSlice';
 import { fetchUserData } from '../../features/user/UserSlice';
-import { DeleteBooking } from '../../api/Bookings';
 import UpdatePayment from '../model/UpdatePayment';
 import "../../App.css"
+import dayjs from 'dayjs';
+import isSameOrAfter from 'dayjs/plugin/isSameOrAfter';
+dayjs.extend(isSameOrAfter);
 
-const { confirm } = Modal;
 const { Option } = Select;
 
 const commonColumns = [
@@ -167,7 +167,8 @@ function CommonTable({ filter }) {
         .filter((booking) => {
             switch (filter) {
                 case 'upcoming':
-                    return new Date(booking.date) >= new Date();
+                    const today = dayjs().startOf('day');
+                    return dayjs(booking.date).isSameOrAfter(today, 'day');
                 default:
                     return true;
             }
@@ -248,7 +249,7 @@ function CommonTable({ filter }) {
                     customerName: '',
                     mobilenu: '',
                     date: '',
-                    Hr: totalHoursPerPage,
+                    Hr: Math.round(totalHoursPerPage),
                     startTime: '',
                     endTime: '',
                     item: '',

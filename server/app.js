@@ -1,30 +1,36 @@
 const express = require('express');
 const db = require('./utils/db');
 const http = require('http');
+const path = require('path');
 const UserRouter = require('./routes/UserRouter');
 const BookingRouter = require('./routes/BookingRouter');
 const PlanRouter = require('./routes/PlanRouter');
 const app = express();
 const PORT = process.env.PORT || 4000;
 const cors = require("cors");
-db()
+
+db();
 
 const server = http.createServer(app);
 const { Server } = require("socket.io");
 
-app.use(express.json())
+app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
-app.use(cors())
+app.use(cors());
+
+if (process.env.NODE_ENV === 'production') {
+    app.use(express.static(path.join(__dirname, '../client/build')));
+    app.get('*', (req, res) => {
+        res.sendFile(path.join(__dirname, '../client/build', 'index.html'));
+    });
+}
 
 const io = new Server(server, {
     cors: {
         origin: process.env.CLIENT_BASEURL,
-        methods: ['GET', 'POST']
+        methods: ['GET', 'POST'],
+        credentials: true
     }
-})
-
-app.get('/', (req, res) => {
-    res.send('Hello, World!');
 });
 
 app.use('/api', UserRouter);
@@ -32,6 +38,8 @@ app.use('/api', BookingRouter);
 app.use('/api', PlanRouter);
 
 io.on('connection', (socket) => {
+    console.log('A user connected');
+
     socket.on('joinRoom', (room) => {
         socket.join(room);
         console.log(`User joined room: ${room}`);
